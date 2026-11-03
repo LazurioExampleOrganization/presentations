@@ -5,6 +5,10 @@ unplanned migrations. Only two kinds of stack change exist: a **profile
 release** (tool versions inside one generation) and a **generation change**
 (the data layer). Everything else stays within the pinned stack.
 
+This release follows the stack profile `app@2026.11`
+([Lazurio stack profiles](https://github.com/Lazurio/LazurioPlatform/blob/main/docs/stack-profiles.md#app)):
+Bun 1.4.4, TypeScript 7.0.2, Biome 2.6.4, Vite 8.3.5 and React 19.3.1.
+
 ## Within generation v1
 
 `app/v1` has no own data layer: decks are Git files in `data/v1/decks/`.
