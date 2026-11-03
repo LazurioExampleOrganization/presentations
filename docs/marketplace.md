@@ -3,7 +3,7 @@
 **Status:** release 0.1.0 prepared, not yet published. **Author:** Lazurio.
 **License:** MIT, see [LICENSE](../LICENSE) and [NOTICE](../NOTICE).
 **Price:** free. **Source:** this repository,
-`LazurioExampleOrganization/presentations`. **Support:** Issues in this
+`LazurioTemplates/presentations`. **Support:** Issues in this
 repository.
 
 Create presentations with your Agent and keep them in your Organization.
@@ -18,6 +18,15 @@ hosting have the user's own provider costs.
 
 Visual editing, automatic PDF generation/storage, PPTX and automatic updates
 are outside v1. No SLA is offered.
+
+## Screenshots
+
+`docs/screenshots/` holds the card and detail images for the Marketplace:
+`library.webp`, `detail.webp`, `agent-brief.webp` and `slide.webp`. They are
+browser screenshots of this template running on loopback with only its
+synthetic starter, taken at twice the pixel density and scaled to 1600 px
+wide (WebP, metadata stripped). Retake them whenever a release changes what
+the app looks like.
 
 The catalog entry pins the release by its tag, full commit and archive digest.
 A tag or a branch alone is not the release identity.

@@ -1,38 +1,96 @@
-# Controlled adoption and updates
+# Adopting Presentations into an Organization
 
-This is an Agent-led private pilot, not an installer. Resolve the license gate
-before someone outside the authorized private pilot receives or executes it.
+This is the procedure an Agent follows when a person chooses "Přidat do
+Organizace" in the Lazurio Marketplace or asks for this template directly.
+It is a guided adoption through Git and pull requests, not an installer. The
+Agent prepares; the person approves every merge and activation.
 
-The human chooses destination Organization/name. Read its rules; check live
-rights, collisions and compatibility. In its Organization task worktree, run
-`lazurio module create --stack vite-react` with the exact Organization/module
-selector (review the dry-run first). The scaffold owns repo identity and lease;
-repo/slot activation follow the normal Admin and PR flow.
+## 0. Inputs
 
-In the new module task worktree, fetch the reviewed template commit into a
-`template` remote and merge with `--allow-unrelated-histories`. Keep it as an
-ancestor; do not squash or re-copy the module. Reconcile overlapping files:
+- The exact release: tag `v<version>` and the full commit it points to (from
+  the Marketplace entry). A branch name is not a release.
+- The target Organization, confirmed by the person, and the module name
+  (default `presentations`).
+- How the library starts: with the synthetic starter or empty.
 
-- Keep scaffold identity/company/lease in `lazurio.module.json`; adopt template
-  app paths. Retain runtime ID/company/module in `app/v1/package.json`, while
-  adopting template dependencies, scripts, preparation and the `web` listener.
-- Adopt app source, seed and preview. Remove the scaffold greeting/test and
-  Vite serving contract; the gallery uses one Bun server and Vite build only.
-- Honor receiving agent rules. Adapt local tokens through its design system;
-  never import another Organization at runtime.
+## 1. Check before changing anything
 
-Frozen install, check, prepare and test. Record the exact template commit in
-the consumer README and prove ancestry. After slot activation, `lazurio module
-setup <consumer-root> --root <Lazurio-root> --json` must pass. Start with `lazurio
-module start <Organization>/<module> --json` and open its returned URL. A
-pre-activation contract preview is not lifecycle/installation acceptance.
+1. Read the target Organization's `AGENTS.md` and module rules.
+2. Check live rights of the person and Agent on GitHub: creating a private
+   repository in the Organization, pushing to it, and opening a pull request in
+   the Organization root (module slot). Where a right is missing, prepare a
+   precise request for the person who has it and stop that step; never switch
+   identity or widen access.
+3. Check the name: the Organization manifest must not already declare the
+   module and `gh api repos/<Organization>/<name>` must return 404. On a
+   collision, keep the existing module untouched and agree another name.
+4. Verify the release: the tag resolves to the recorded commit and the
+   archive digest matches the Marketplace entry. A mismatch stops adoption.
+5. Show the person the plan: release, target Organization, private
+   repository, module slot, Teams to be chosen, and that the template's code
+   will run in their Environment. Continue only after their approval.
 
-If activation is partial, preserve a precise resume point. Never delete others'
-repos/data or force protected branches. The human publishes reviewed PRs.
+## 2. Create the module
 
-Updates fetch another immutable commit into a consumer worktree and merge
-upstream normally. Preserve identity, configuration and existing decks. Review
-conflicts and show the preview. Prove that a local deck and code customization
-survive a non-conflicting update and a genuine conflict before claiming pilot
-completion. Declining the PR keeps current code. Rollback is a reviewed revert
-preserving data, never a hard reset or wholesale copy.
+In a task worktree of the Organization root, run
+`lazurio module create --stack vite-react` with the exact Organization and
+module selector, review the dry-run with the person, then create it. The
+scaffold owns the repository, identity and port lease.
+
+## 3. Merge the template so it stays an ancestor
+
+In a task worktree of the new module repository:
+
+```sh
+git remote add template https://github.com/LazurioTemplates/presentations.git
+git fetch template tag v<version>
+git merge --allow-unrelated-histories v<version>
+```
+
+Do not squash or copy files over; the merge keeps the release commit as an
+ancestor so later releases merge normally. Resolve overlaps:
+
+- `lazurio.module.json`: keep the scaffold's `id`, `company` and
+  `port_leases`; take the template's `apps` and `default_app`.
+- `app/v1/package.json`: keep the scaffold's `lazurio.runtime.id`, `company`
+  and `module`; take the template's dependencies, scripts, `listeners`,
+  `preparation` and the rest of `lazurio`.
+- Take the template's app source, tests, design snapshot, starter deck and
+  preview. Remove the scaffold greeting and its test; the template serves
+  through one Bun server and uses Vite only for the build.
+- Empty start: remove `data/v1/decks/2026-10-11-project-proposal/` and its
+  preview, and adjust `tests/template-seed.test.ts` to expect an empty library.
+- Record the adopted release (tag and commit) in the module README.
+
+Then in `app/v1`: `bun install --frozen-lockfile` and `bun run check`. Push
+and open a pull request for the person to review. Merge nothing yourself.
+
+## 4. Activate after approval
+
+After the person merges the module PR and the slot PR in the Organization
+root, run `lazurio module setup <module-root> --root <Lazurio-root> --json`
+and `lazurio module start <Organization>/<module> --json`, open the returned
+URL and check the library, detail, Agent brief and playback in the browser.
+Adoption is done only when this works; a clone or a health check is not
+enough.
+
+The last step is access: grant Teams access to the module the same way as for
+every other module of the Organization. The Marketplace has no access model
+of its own.
+
+## 5. If something fails
+
+Keep a precise resume point (what exists: repository, branch, PR, slot).
+Never delete someone else's repository or data, never force-push a
+protected branch and never take over a repository of the same name that the
+adoption did not create. Before activation the person may discard the
+unmerged draft; after activation, rollback is a reviewed revert that keeps
+the Organization's presentations.
+
+## Updates
+
+A later release is adopted the same way as step 3: fetch the new tag into a
+task worktree of the module and merge it. The Organization's presentations,
+identity and own code changes stay; review any conflict with the person and
+show the result in the browser before the PR. Declining the PR keeps the
+current version. See [extending.md](extending.md#taking-template-updates).

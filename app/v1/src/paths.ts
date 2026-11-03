@@ -23,23 +23,23 @@ export const DIST_DIR = path.join(APP_ROOT, "dist");
  * files from URL-controlled segments.
  */
 export function resolveWithinRoot(root: string, relativePath: string): string | null {
-	if (!relativePath || path.isAbsolute(relativePath)) return null;
-	const normalized = path.normalize(relativePath);
-	if (normalized === ".." || normalized.startsWith(`..${path.sep}`)) return null;
-	const resolved = path.resolve(root, normalized);
-	const boundary = `${root}${path.sep}`;
-	if (resolved !== root && !resolved.startsWith(boundary)) return null;
-	return resolved;
+  if (!relativePath || path.isAbsolute(relativePath)) return null;
+  const normalized = path.normalize(relativePath);
+  if (normalized === ".." || normalized.startsWith(`..${path.sep}`)) return null;
+  const resolved = path.resolve(root, normalized);
+  const boundary = `${root}${path.sep}`;
+  if (resolved !== root && !resolved.startsWith(boundary)) return null;
+  return resolved;
 }
 
 /** Resolve a path inside the decks (data) store, or null if it would escape it. */
 export function resolveDeckPath(relativePath: string): string | null {
-	return resolveWithinRoot(DECKS_ROOT, relativePath);
+  return resolveWithinRoot(DECKS_ROOT, relativePath);
 }
 
 /** Resolve a path inside the generated exports store, or null if it escapes it. */
 export function resolveExportPath(relativePath: string): string | null {
-	return resolveWithinRoot(EXPORTS_ROOT, relativePath);
+  return resolveWithinRoot(EXPORTS_ROOT, relativePath);
 }
 
 /**
@@ -50,27 +50,27 @@ export function resolveExportPath(relativePath: string): string | null {
  * Returns false on any error (missing file, broken link, escape).
  */
 export async function realpathWithinRoot(root: string, existingPath: string): Promise<boolean> {
-	try {
-		const [realTarget, realRoot] = await Promise.all([realpath(existingPath), realpath(root)]);
-		return realTarget === realRoot || realTarget.startsWith(`${realRoot}${path.sep}`);
-	} catch {
-		return false;
-	}
+  try {
+    const [realTarget, realRoot] = await Promise.all([realpath(existingPath), realpath(root)]);
+    return realTarget === realRoot || realTarget.startsWith(`${realRoot}${path.sep}`);
+  } catch {
+    return false;
+  }
 }
 
 /** Confirm an existing file's real path stays inside the decks (data) store. */
 export function isRealpathWithinDecks(existingPath: string): Promise<boolean> {
-	return realpathWithinRoot(DECKS_ROOT, existingPath);
+  return realpathWithinRoot(DECKS_ROOT, existingPath);
 }
 
 /** Confirm an existing file's real path stays inside the generated exports store. */
 export function isRealpathWithinExports(existingPath: string): Promise<boolean> {
-	return realpathWithinRoot(EXPORTS_ROOT, existingPath);
+  return realpathWithinRoot(EXPORTS_ROOT, existingPath);
 }
 
 /** Deck slugs are date-prefixed kebab folders; reject anything else. */
 const DECK_SLUG_RE = /^[a-z0-9][a-z0-9._-]*$/;
 
 export function isValidDeckSlug(slug: string): boolean {
-	return DECK_SLUG_RE.test(slug) && !slug.includes("..") && !slug.includes("/");
+  return DECK_SLUG_RE.test(slug) && !slug.includes("..") && !slug.includes("/");
 }
