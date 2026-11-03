@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.astro/
+*.tsbuildinfo
+.env*
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.worktrees/
+
+output/

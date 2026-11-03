@@ -1,0 +1,19 @@
+{
+  "schema_version": "lazurio.module.v1",
+  "id": "presentations",
+  "company": "ExampleOrganization",
+  "tcp_port_policy": {
+    "mode": "single"
+  },
+  "port_leases": [
+    {
+      "id": "main",
+      "host": "127.0.0.1",
+      "port": 20000
+    }
+  ],
+  "apps": [
+    "app/v1/package.json"
+  ],
+  "default_app": "app/v1/package.json"
+}
