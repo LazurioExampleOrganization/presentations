@@ -3,7 +3,7 @@
 The release version (semver) is independent of the app generation
 (`app/v1`).
 
-## 0.1.0 — unreleased, first Marketplace release
+## 0.1.0 — 2026-11-03
 
 - Library of presentations with first-slide previews, metadata and sources.
 - HTML playback with arrow navigation and browser printing to 16:9 PDF pages.
