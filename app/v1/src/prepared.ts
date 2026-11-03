@@ -8,16 +8,16 @@ import { missingPreviews } from "./previews.ts";
 
 const index = resolve(import.meta.dir, "../dist/index.html");
 if (!(await Bun.file(index).exists())) {
-	console.error(`not prepared: ${index} is missing; run \`bun run prepare:app\``);
-	process.exit(1);
+  console.error(`not prepared: ${index} is missing; run \`bun run prepare:app\``);
+  process.exit(1);
 }
 
 for (const directory of [resolve(APP_ROOT, "public/previews"), resolve(DIST_DIR, "previews")]) {
-	const missing = await missingPreviews(await listDeckSlugs(), directory);
-	if (missing.length) {
-		console.error(
-			`not prepared: first-slide previews missing in ${directory}: ${missing.join(", ")}`,
-		);
-		process.exit(1);
-	}
+  const missing = await missingPreviews(await listDeckSlugs(), directory);
+  if (missing.length) {
+    console.error(
+      `not prepared: first-slide previews missing in ${directory}: ${missing.join(", ")}`,
+    );
+    process.exit(1);
+  }
 }
