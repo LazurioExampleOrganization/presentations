@@ -42,7 +42,7 @@ scaffold owns the repository, identity and port lease.
 In a task worktree of the new module repository:
 
 ```sh
-git remote add template https://github.com/LazurioExampleOrganization/presentations.git
+git remote add template https://github.com/LazurioTemplates/presentations.git
 git fetch template tag v<version>
 git merge --allow-unrelated-histories v<version>
 ```

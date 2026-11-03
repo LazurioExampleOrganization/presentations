@@ -49,5 +49,5 @@ settings the app refuses to start.
 ## Support
 
 Report problems and questions as Issues in this repository
-(`LazurioExampleOrganization/presentations`). Never attach credentials or your
+(`LazurioTemplates/presentations`). Never attach credentials or your
 Organization's presentations to a public issue.

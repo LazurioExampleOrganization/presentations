@@ -2,9 +2,10 @@
 
 Presentations is a Lazurio module template: a library of HTML presentations
 with first-slide previews, playback, printing to 16:9 PDF pages and a brief
-for creating decks with the user's own Agent. It lives in Lazurio Example
-Organization, works in English (the app UI is Czech for now) and is MIT
-licensed. All bundled content is fictional.
+for creating decks with the user's own Agent. Its source and releases live
+in `LazurioTemplates/presentations`; Lazurio Example Organization adopts it
+from the Marketplace like any other Organization. It works in English (the
+app UI is Czech for now) and is MIT licensed. All bundled content is fictional.
 
 ## Shape of the module
 
@@ -59,4 +60,6 @@ publication of a presentation.
   instruction. The release version is independent of the app generation.
 - Adoption into another Organization follows [docs/adoption.md](docs/adoption.md);
   the adopted module keeps its own identity and lease. The values in
-  `lazurio.module.json` and `app/v1/package.json` here are reference values.
+  `lazurio.module.json` and `app/v1/package.json` here are placeholders
+  (`REPLACE-WITH-ORG-NAME`, `replace-with-org-slug-presentations-v1`, port
+  20000); the scaffold of the adopting Organization replaces them.

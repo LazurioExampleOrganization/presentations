@@ -32,9 +32,9 @@
   "lazurio": {
     "runtime": {
       "schema_version": "lazurio.runtime.v1",
-      "id": "lazurioexampleorganization-presentations-v1",
+      "id": "replace-with-org-slug-presentations-v1",
       "title": "Presentations",
-      "company": "LazurioExampleOrganization",
+      "company": "REPLACE-WITH-ORG-NAME",
       "module": "presentations",
       "surface": "internal",
       "dev_script": "dev",

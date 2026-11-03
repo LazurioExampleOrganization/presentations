@@ -3,7 +3,7 @@
 **Status:** release 0.1.0 prepared, not yet published. **Author:** Lazurio.
 **License:** MIT, see [LICENSE](../LICENSE) and [NOTICE](../NOTICE).
 **Price:** free. **Source:** this repository,
-`LazurioExampleOrganization/presentations`. **Support:** Issues in this
+`LazurioTemplates/presentations`. **Support:** Issues in this
 repository.
 
 Create presentations with your Agent and keep them in your Organization.
