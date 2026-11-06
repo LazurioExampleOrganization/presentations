@@ -22,20 +22,55 @@ Agent prepares; the person approves every merge and activation.
    precise request for the person who has it and stop that step; never switch
    identity or widen access.
 3. Check the name: the Organization manifest must not already declare the
-   module and `gh api repos/<Organization>/<name>` must return 404. On a
-   collision, keep the existing module untouched and agree another name.
-4. Verify the release: the tag resolves to the recorded commit and the
-   archive digest matches the Marketplace entry. A mismatch stops adoption.
-5. Show the person the plan: release, target Organization, private
-   repository, module slot, Teams to be chosen, and that the template's code
-   will run in their Environment. Continue only after their approval.
+   module, and no repository `<Organization>/<name>` may exist. Read the
+   owner GitHub answers with, not only the status:
+
+   ```sh
+   gh api repos/<Organization>/<name> --jq .full_name
+   ```
+
+   A 404 means the name is free. A `full_name` other than
+   `<Organization>/<name>` (compared case-insensitively) is free too: GitHub
+   keeps a redirect for a repository that moved to another owner, and this
+   template itself moved from an Organization to `LazurioTemplates`. Creating
+   the new repository ends that redirect for old links; say so in the plan.
+   Only an answer with `<Organization>/<name>` itself is a collision: keep the
+   existing module untouched and agree another name.
+4. Verify the release: the tag must resolve to the full commit the
+   Marketplace entry records. For an annotated tag compare its peeled
+   `^{}` line:
+
+   ```sh
+   git ls-remote https://github.com/LazurioTemplates/presentations.git "refs/tags/v<version>*"
+   ```
+
+   A mismatch stops adoption. The registry carries an `artifactDigest` field,
+   but it records none yet (`null`) and Lazurio does not verify it; once an
+   entry records a digest, also compare it with the SHA-256 of the release's
+   source archive.
+5. Check compatibility: the Organization's Environments run a Lazurio release
+   that knows `start_script` and `build_output` (LazurioPlatform v0.1.11 or
+   newer). Lazurio fetches the pinned Bun when it is missing.
+6. Show the person the plan: release, target Organization, private
+   repository, module slot, the Teams that get access (chosen with the person
+   from the Organization's real list, `gh api orgs/<Organization>/teams --jq
+   '.[].slug'`, never guessed), and that the template's code will run in
+   their Environment. Continue only after their approval.
 
 ## 2. Create the module
 
-In a task worktree of the Organization root, run
-`lazurio module create --stack vite-react` with the exact Organization and
-module selector, review the dry-run with the person, then create it. The
-scaffold owns the repository, identity and port lease.
+In a task worktree of the Organization root, run the dry run with the
+Organization form, which needs `--teams`:
+
+```sh
+lazurio module create <Organization>/<name> --stack vite-react --teams <team,team> --dry-run --json
+```
+
+Review its plan with the person, then run the same command with
+`--confirm <plan>` instead of `--dry-run` (its `next_steps` name the exact
+command). The scaffold owns the repository, identity, port lease and the
+slot in the Organization root; the Teams it names get Write on the new
+repository, as for every module.
 
 ## 3. Merge the template so it stays an ancestor
 
@@ -62,21 +97,25 @@ ancestor so later releases merge normally. Resolve overlaps:
   preview, and adjust `tests/template-seed.test.ts` to expect an empty library.
 - Record the adopted release (tag and commit) in the module README.
 
-Then in `app/v1`: `bun install --frozen-lockfile` and `bun run check`. Push
-and open a pull request for the person to review. Merge nothing yourself.
+Then in `app/v1`: `bun install --frozen-lockfile` and `bun run check` (it
+also builds the client and starts the built version once). Push and open a
+pull request for the person to review. Merge nothing yourself.
 
 ## 4. Activate after approval
 
 After the person merges the module PR and the slot PR in the Organization
 root, run `lazurio module setup <module-root> --root <Lazurio-root> --json`
-and `lazurio module start <Organization>/<module> --json`, open the returned
-URL and check the library, detail, Agent brief and playback in the browser.
+and `lazurio module start <Organization>/<module> --json`. From `main`
+Lazurio builds the client (`build` → `dist`) and starts the production
+server (`start`), which serves that build. Open the returned URL and check
+the library, detail, Agent brief and playback in the browser.
 Adoption is done only when this works; a clone or a health check is not
 enough.
 
-The last step is access: grant Teams access to the module the same way as for
-every other module of the Organization. The Marketplace has no access model
-of its own.
+The last step is access: confirm or change which Teams reach the module the
+same way as for every other module of the Organization, in the Organization
+overview (Přehled Organizace) of Lazurio, and only on the person's
+instruction. The Marketplace has no access model of its own.
 
 ## 5. If something fails
 
