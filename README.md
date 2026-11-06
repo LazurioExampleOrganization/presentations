@@ -1,38 +1,64 @@
 # Presentations
 
-Modul `presentations` Organizace `LazurioExampleOrganization`: UI a datová aplikace
-ve Vite + React + TypeScript strict. Vznikl příkazem
-`lazurio module create --stack vite-react` a splňuje Lazurio Module Standard.
+A presentation library for a Lazurio Organization: browse first-slide
+previews, read a deck's purpose and sources, present HTML slides with arrow
+keys and print them to 16:9 PDF pages. "Vytvořit s Agentem" gives you a brief
+to paste into your own Agent's chat; the Agent agrees an outline with you,
+drafts the deck from your Organization's sources and prepares a pull request.
 
-## Struktura
+It is a free template of the Lazurio Marketplace, released under the
+[MIT License](LICENSE); see [NOTICE](NOTICE) for fonts and trademarks.
 
-- `lazurio.module.json` — identita Modulu, lease `main` z poolu Organizace,
-  `apps[]` a `default_app`.
-- `app/v1/` — App; `package.json` nese `lazurio.runtime` (listener
-  `app`, health `/`) a `lazurio.preparation`.
-- `.github/workflows/check.yml` — CI: `bun install --frozen-lockfile`,
-  `bun run check`, `bun test`.
+![Library](docs/screenshots/library.webp)
 
-## Vývoj
+## What it is and is not
+
+- One Bun server with a React gallery and a read-only API. Decks are files in
+  Git, so every change is a reviewable pull request.
+- No visual slide editor, AI API integration, PPTX export or automatic
+  publication. The app needs no account, API key or paid service; your Agent
+  and hosting keep their own costs. No SLA is offered.
+- The only bundled presentation is a synthetic four-slide project proposal.
+  The library and starter use the Lazurio design system with locally hosted
+  Inter Tight Variable and Geist Mono ([design provenance](docs/design-system.md)).
+- The app UI is in Czech.
+
+## Use it
+
+Add it to your Organization from the Marketplace in Lazurio, or follow
+[docs/adoption.md](docs/adoption.md) with your Agent. Develop it further with
+[docs/extending.md](docs/extending.md).
+
+For a local check, in `app/v1`:
 
 ```sh
-cd app/v1
 bun install --frozen-lockfile
-bun run check   # tsc --noEmit + biome
-bun test        # jednotkové testy a start kontrakt
+bun run check
 ```
 
-Start patří Launchpadu: `lazurio module start LazurioExampleOrganization/presentations --json`
-a otevři `result.runtime.url`. Ruční start jen s listener proměnnými (port je
-lease `main` v `lazurio.module.json`):
+Start an adopted module through the Lazurio lifecycle
+(`lazurio module start <Organization>/<module>`); without Lazurio's listener
+settings the app refuses to start.
 
-```sh
-LAZURIO_RUNTIME_LISTENER_APP_HOST=127.0.0.1 LAZURIO_RUNTIME_LISTENER_APP_PORT=<port> bun run dev
-```
+## More
 
-## Příprava
+[Architecture](ARCHITECTURE.md) · [Marketplace listing](docs/marketplace.md) ·
+[Release procedure](docs/release.md) · [Changelog](CHANGELOG.md) ·
+[Agent rules](AGENTS.md)
 
-- `check:prepared` ověří, že jsou nainstalované závislosti; Vite dev server
-  build nepotřebuje, proto App nedeklaruje `prepare_script`.
-- `dev` spouští jeden proces Vite dev serveru. Build, data ani migrace do něj
-  nepatří.
+## Support
+
+Report problems and questions as Issues in this repository
+(`LazurioTemplates/presentations`). Never attach credentials or your
+Organization's presentations to a public issue.
+
+## This Organization's copy
+
+This is the Presentations module of
+[Lazurio Example Organization](https://github.com/LazurioExampleOrganization),
+adopted from the Lazurio Marketplace template
+[`LazurioTemplates/presentations`](https://github.com/LazurioTemplates/presentations)
+at release `v0.1.0` (commit `4b023772fbe45c2209b6eb1ff44009239ed1ac99`) by
+merging it into this repository, so later releases arrive as ordinary merges
+([docs/extending.md](docs/extending.md)). It starts with the synthetic example
+presentation of that release.
