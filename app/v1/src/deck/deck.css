@@ -538,25 +538,30 @@ html[lang="en"] .slide--quote blockquote p::after {
   color: var(--text-muted);
 }
 
-/* Video: local file, muted until someone turns the sound on. */
+/* Video: local file, muted until someone turns the sound on. The words on
+   the left third, the video 16:9 on the right two thirds. */
 .slide--video .slide-inner {
-  gap: var(--space-6);
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto 1fr;
+  column-gap: var(--space-12);
+  row-gap: var(--space-6);
+  align-content: center;
+}
+.slide--video h2,
+.slide--video .lede {
+  grid-column: 1;
 }
 .video {
-  position: relative;
-  flex: 1;
-  min-height: 0;
+  grid-column: 2;
+  grid-row: 1 / span 2;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
 .video video {
-  flex: 1;
-  min-height: 0;
-  width: auto;
-  max-width: 100%;
+  width: 100%;
   aspect-ratio: 16 / 9;
-  align-self: flex-start;
   object-fit: contain;
   border-radius: var(--radius-lg);
   border: var(--stroke-hairline) solid var(--border);
@@ -683,6 +688,7 @@ html[lang="en"] .slide--quote blockquote p::after {
   z-index: 10;
 }
 .deck-control {
+  white-space: nowrap;
   font: inherit;
   font-size: 14px;
   line-height: 20px;
@@ -725,6 +731,12 @@ html[lang="en"] .slide--quote blockquote p::after {
 }
 body.is-idle .deck-controls {
   opacity: 0;
+}
+@media (max-width: 640px) {
+  #present,
+  #print {
+    display: none;
+  }
 }
 body.is-idle .deck-controls:focus-within {
   opacity: 1;
@@ -801,12 +813,8 @@ body.is-idle .deck-controls:focus-within {
   }
   .video-print {
     display: block;
-    flex: 1;
-    min-height: 0;
-    width: auto;
-    max-width: 100%;
+    width: 100%;
     aspect-ratio: 16 / 9;
-    align-self: flex-start;
     object-fit: contain;
     border-radius: var(--radius-lg);
   }

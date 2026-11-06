@@ -1,37 +1,61 @@
-# Architecture and extraction
+# Architecture
 
-One Bun process serves the React gallery, a same-origin read-only API, local
-HTML sources and derived PDFs. From `main` Lazurio builds the gallery with
-Vite and starts the server in production, serving that build; a development
-run lets Bun bundle the gallery itself. Decks are Git-native files. The authoring
-button supplies a prompt for an existing Agent; it creates no chat and sends no
-data to an API. There is no browser-side mutation or separate content backend.
+One Bun process serves the React library, a same-origin read-only API, the
+decks as static files and derived PDFs. From `main` Lazurio builds the
+library with Vite and starts the server in production, serving that build;
+a development run lets Bun bundle the library itself. There is no
+browser-side mutation and no content backend: decks are Git files and every
+change is a pull request.
 
-The gallery/runtime and general containment tests were selected from an
-earlier internal presentation library. Its deck store, generated files,
-previews, logos, fonts, ledgers, operational instructions and Git history were
-excluded. The sample is synthetic. Pinned dependencies come from the
-standard module scaffold, including module-kit v0.2.0.
+## Decks
 
-Reuse was chosen because the existing library covers the requested workflow.
-A browser editor adds mutable state and editing interfaces without a consumer
-requirement; it is deferred. A PPTX-first application adds conversion
-dependencies and is outside this initial HTML library.
+```text
+data/v1/decks/<YYYY-MM-DD>-<slug>/
+  deck.source.json   the source: languages, metadata, slides (people and agents)
+  media/             images, videos, posters, captions (people and agents)
+  index.html         built: the primary language
+  index.<lang>.html  built: each further language
+  deck.meta.json     built: metadata per language, the slide outline
+  assets/            built: deck.css (design system theme + layout),
+                     deck.js (runtime), the local fonts and their licenses
+```
 
-Important failures: paths/symlinks cannot escape deck/export stores; foreign
-Host headers are refused; missing listener settings stop startup; missing
-JPEG previews block the client build. Missing metadata and an empty library remain
-usable. The seed contract failed against the empty store, then passed against
-the actual gallery API with the synthetic sample.
+`app/v1/src/deck/` holds the build: `source.ts` (the shape of the source
+and its validation, errors by field path), `slides.ts` (one renderer per
+slide type, every text escaped), `render.ts` (the page per language and
+`deck.meta.json`), `theme.ts` (the design system's tokens as CSS custom
+properties at slide scale), `build.ts` (files, drift and writing) and
+`runtime.ts` with `link.ts` (the browser script, bundled by `Bun.build`).
+`src/cli/deck-build.ts` is `bun run deck:build` and `deck:check`.
 
-Adoption uses the standard scaffold for repo/slot/lease creation. A controlled
-Git merge retains the template base while keeping consumer identity and lease.
-Later updates use three-way Git integration and consumer PRs. No grants or
-credentials are copied. The consumer can add its own data and adapt the theme.
+The build is deterministic: a test rebuilds every deck that has a source
+and fails when the committed files differ, so the source stays the truth.
 
-Local author preview is not proof of a released installation/update in another
-Organization. DEV-6593 retains that separate marketplace pilot gate.
+A built deck is self-contained: it opens from the App, from a file or from
+any static host, loads nothing from the network and stores nothing. The
+slide position lives in the address; a personal version is the link's query
+(`for`, `org`), rendered with `textContent`.
 
-The design uses the canonical Lazurio component/token
-snapshot and licensed local fonts; see [design provenance](docs/design-system.md).
-Runtime/adoption boundaries remain unchanged.
+## The library
+
+`src/decks.ts` discovers decks (a directory with an `index.html`), reads
+`deck.meta.json` and answers per language (`?lang=`): the variant in that
+language when the deck has it, else its primary language, so one screen
+never mixes languages. `src/ui-app/` is the React library; its language
+comes from the address, Lazurio's shell document or `src/instance.ts`.
+
+## Boundaries
+
+Paths and symlinks cannot leave the deck and export stores; foreign Host
+headers are refused; missing listener settings stop the start; missing
+previews stop the client build. A deck without metadata and an empty
+library stay usable.
+
+Adoption uses the standard scaffold for the repository, slot and lease, and
+a merge of the release that keeps it an ancestor; later releases are merges
+of their tags. No grants or credentials are copied. The design system is a
+subtree merge of a release of `LazurioTemplates/design-system`, taken the
+same way.
+
+Local preview is not proof of a released installation in another
+Organization; that gate stays with the Marketplace pilot.
