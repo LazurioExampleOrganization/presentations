@@ -42,6 +42,9 @@ describe("start contract", () => {
         const url = `http://127.0.0.1:${port}${entrypoint.health.path}`;
         const health = await firstResponse(url, startTimeoutMs);
         expect(health.status).toBe(200);
+        const context = await fetch(`http://127.0.0.1:${port}/api/health`).then((r) => r.json());
+        expect(context.company).toBe(runtime.company);
+        expect(context.module).toBe(runtime.module);
         const foreign = await fetch(url, {
           headers: { host: "foreign.invalid" },
           redirect: "manual",
