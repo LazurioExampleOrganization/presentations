@@ -1,0 +1,80 @@
+{
+  "schema_version": "lazurio.presentation.source.v1",
+  "languages": ["cs", "en"],
+  "title": { "cs": "Testovací deck", "en": "Test deck" },
+  "purpose": "offer",
+  "status": "draft",
+  "owner": { "cs": "Tým", "en": "Team" },
+  "audience": [{ "cs": "Testy", "en": "Tests" }],
+  "sources": [{ "cs": "Fixture testů", "en": "A test fixture" }],
+  "created_at": "2026-01-01",
+  "slides": [
+    {
+      "type": "title",
+      "title": { "cs": "Titul", "en": "Title" },
+      "subtitle": { "cs": "Podtitul", "en": "Subtitle" }
+    },
+    { "type": "section", "title": { "cs": "Předěl", "en": "Divider" } },
+    {
+      "type": "problem",
+      "title": { "cs": "Problém", "en": "Problem" },
+      "points": [
+        { "title": { "cs": "A", "en": "A" }, "text": { "cs": "jedna", "en": "one" } },
+        { "title": { "cs": "B", "en": "B" }, "text": { "cs": "dvě", "en": "two" } }
+      ]
+    },
+    {
+      "type": "quote",
+      "quote": { "cs": "Citace", "en": "Quote" },
+      "author": { "cs": "Autor", "en": "Author" }
+    },
+    {
+      "type": "options",
+      "title": { "cs": "Varianty", "en": "Options" },
+      "options": [
+        { "name": "A", "points": [{ "cs": "bod", "en": "point" }], "highlight": true },
+        { "name": "B", "points": [{ "cs": "bod", "en": "point" }] }
+      ]
+    },
+    {
+      "type": "case",
+      "title": { "cs": "Případ", "en": "Case" },
+      "client": { "cs": "Klient", "en": "Client" },
+      "challenge": { "cs": "výzva", "en": "challenge" },
+      "solution": { "cs": "řešení", "en": "solution" },
+      "results": [{ "value": "1", "label": { "cs": "výsledek", "en": "result" } }]
+    },
+    {
+      "type": "timeline",
+      "title": { "cs": "Časová osa", "en": "Timeline" },
+      "steps": [
+        { "title": { "cs": "krok", "en": "step" } },
+        { "title": { "cs": "další", "en": "next" } }
+      ]
+    },
+    {
+      "type": "metrics",
+      "title": { "cs": "Čísla", "en": "Numbers" },
+      "metrics": [{ "value": "2", "label": { "cs": "číslo", "en": "number" } }],
+      "chart": {
+        "label": { "cs": "Graf", "en": "Chart" },
+        "bars": [{ "label": "1", "value": 1 }, { "label": "2", "value": 2 }]
+      }
+    },
+    {
+      "type": "video",
+      "title": { "cs": "Video", "en": "Video" },
+      "video": { "src": "media/clip.mp4", "poster": "media/poster.jpg" }
+    },
+    {
+      "type": "appendix",
+      "title": { "cs": "Příloha", "en": "Appendix" },
+      "items": [{ "title": { "cs": "a", "en": "a" }, "text": { "cs": "b", "en": "b" } }]
+    },
+    {
+      "type": "closing",
+      "title": { "cs": "Závěr", "en": "Closing" },
+      "actions": [{ "label": { "cs": "Napsat", "en": "Write" }, "href": "mailto:team@example.com" }]
+    }
+  ]
+}

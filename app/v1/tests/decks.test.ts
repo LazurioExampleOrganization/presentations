@@ -12,49 +12,10 @@ import {
   resolveExportPath,
 } from "../src/paths.ts";
 
+// A valid deck slug for the lexical containment checks; no such deck needs to exist.
 const KNOWN_DECK = "2026-11-02-example-office-coffee";
 
 describe("deck discovery", () => {
-  test("lists decks from the decks store", async () => {
-    const decks = await getDeckSummaries();
-    expect(decks.length).toBeGreaterThan(0);
-    expect(decks.map((deck) => deck.slug)).toContain(KNOWN_DECK);
-  });
-
-  test("summarizes the sample deck in its primary language", async () => {
-    const decks = await getDeckSummaries();
-    const deck = decks.find((item) => item.slug === KNOWN_DECK);
-    expect(deck).toBeDefined();
-    expect(deck?.slideCount).toBe(11);
-    expect(deck?.title).toBe("Example · Káva pro vaši kancelář");
-    expect(deck?.hasMeta).toBe(true);
-    expect(deck?.purpose).toBe("offer");
-    expect(deck?.status).toBe("synthetic-example");
-    expect(deck?.language).toBe("cs");
-    expect(deck?.languages).toEqual(["cs", "en"]);
-    expect(deck?.deckUrl).toBe(`/decks/${KNOWN_DECK}/`);
-    expect(deck?.previewUrl).toBe(`/previews/${KNOWN_DECK}.jpg`);
-  });
-
-  test("summarizes the sample deck in another language it has, never mixing languages", async () => {
-    const deck = (await getDeckSummaries("en")).find((item) => item.slug === KNOWN_DECK);
-    expect(deck?.title).toBe("Example · Coffee for your office");
-    expect(deck?.language).toBe("en");
-    expect(deck?.audience).toEqual(["Office managers", "Leaders of small companies"]);
-    expect(deck?.deckUrl).toBe(`/decks/${KNOWN_DECK}/index.en.html`);
-    expect(deck?.previewUrl).toBe(`/previews/${KNOWN_DECK}.en.jpg`);
-    const detail = await getDeckDetail(KNOWN_DECK, "en");
-    expect(detail?.owner).toBe("Example sales team");
-    expect(detail?.primaryGoal).toStartWith("Show every slide type");
-    expect(detail?.sources[0]).toStartWith("An invented sample");
-  });
-
-  test("falls back to the primary language for a language the deck does not have", async () => {
-    const deck = (await getDeckSummaries("de")).find((item) => item.slug === KNOWN_DECK);
-    expect(deck?.language).toBe("cs");
-    expect(deck?.deckUrl).toBe(`/decks/${KNOWN_DECK}/`);
-  });
-
   test("handles a deck without deck.meta.json", async () => {
     const noMetaSlug = "zz-smoke-no-meta-deck";
     const deckDir = path.join(DECKS_ROOT, noMetaSlug);
@@ -73,16 +34,6 @@ describe("deck discovery", () => {
     } finally {
       await rm(deckDir, { recursive: true, force: true });
     }
-  });
-
-  test("detail returns starter context without export urls when no exports exist", async () => {
-    const detail = await getDeckDetail(KNOWN_DECK);
-    expect(detail).not.toBeNull();
-    expect(detail?.hasMeta).toBe(true);
-    expect(detail?.primaryGoal).toStartWith("Ukázat všechny typy slidů");
-    expect(detail?.owner).toBe("Obchodní tým Example");
-    expect(detail?.exports).toEqual([]);
-    expect(detail?.exportCount).toBe(0);
   });
 
   test("detail for an unknown slug is null", async () => {

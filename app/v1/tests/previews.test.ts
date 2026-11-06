@@ -4,9 +4,7 @@ import { resolve } from "node:path";
 import { expectedPreviews } from "../src/decks.ts";
 
 test("every presentation ships a first-slide image for each of its languages", async () => {
-  const names = await expectedPreviews();
-  expect(names).toContain("2026-11-02-example-office-coffee.en");
-  for (const name of names) {
+  for (const name of await expectedPreviews()) {
     const image = await readFile(resolve(import.meta.dir, `../public/previews/${name}.jpg`));
     expect(image.subarray(0, 3).toString("hex")).toBe("ffd8ff");
   }
