@@ -1,18 +1,20 @@
 import { realpath } from "node:fs/promises";
 import path from "node:path";
 
-// paths.ts lives in modules/presentation/app/v1/src.
-// GEN2 standard: deck source data lives under data/v1/decks, derived PDF
-// exports under generated/v1/decks. The app reads both; it never regenerates
-// deck HTML.
-// APP_ROOT      -> modules/presentation/app/v1
-// MODULE_ROOT   -> modules/presentation                     (the nested repo root)
-// DECKS_ROOT    -> modules/presentation/data/v1/decks       (deck source data)
-// EXPORTS_ROOT  -> modules/presentation/generated/v1/decks  (derived PDF exports)
+// Where the App finds its files. Decks are content of generation v1: Git
+// files beside the App, not records behind a store. The App reads them; it
+// never regenerates deck HTML.
+// APP_ROOT      -> app/v1
+// MODULE_ROOT   -> the module repository
+// DECKS_ROOT    -> data/v1/decks              (deck sources)
+// EXPORTS_ROOT  -> generated/v1/decks         (derived PDF exports)
+// PUBLIC_DIR    -> app/v1/public              (files the client build copies)
+// DIST_DIR      -> app/v1/dist                (the package's own client build)
 export const APP_ROOT = path.resolve(import.meta.dir, "..");
 export const MODULE_ROOT = path.resolve(APP_ROOT, "..", "..");
 export const DECKS_ROOT = path.join(MODULE_ROOT, "data", "v1", "decks");
 export const EXPORTS_ROOT = path.join(MODULE_ROOT, "generated", "v1", "decks");
+export const PUBLIC_DIR = path.join(APP_ROOT, "public");
 export const DIST_DIR = path.join(APP_ROOT, "dist");
 
 /**

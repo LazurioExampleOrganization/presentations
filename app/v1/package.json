@@ -1,19 +1,19 @@
 {
   "name": "presentations-app-v1",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "packageManager": "bun@1.4.4",
   "scripts": {
     "dev": "bun --no-env-file run src/server.ts",
-    "build": "tsc -b && bun run prepare:app",
+    "start": "bun --no-env-file run src/server.ts",
+    "build": "bun --no-env-file run src/check-previews.ts && bun --no-env-file ./node_modules/vite/bin/vite.js build",
     "typecheck": "tsc -b",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "check": "bun run typecheck && bun run lint && bun run prepare:app && bun test tests",
+    "check": "bun run typecheck && bun run lint && bun test tests",
     "check:prepared": "bun run src/prepared.ts",
-    "test": "bun test tests",
-    "prepare:app": "bun run src/check-previews.ts && bun ./node_modules/vite/bin/vite.js build"
+    "test": "bun test tests"
   },
   "dependencies": {
     "@lazurio/module-kit": "github:Lazurio/module-kit#v0.2.0",
@@ -38,7 +38,9 @@
       "module": "presentations",
       "surface": "internal",
       "dev_script": "dev",
+      "start_script": "start",
       "build_script": "build",
+      "build_output": "dist",
       "tags": [
         "presentations"
       ],
@@ -50,7 +52,7 @@
           "protocol": "http",
           "health": {
             "kind": "http",
-            "path": "/"
+            "path": "/api/health"
           }
         }
       ],
@@ -59,8 +61,7 @@
     "preparation": {
       "schema_version": "lazurio.preparation.v1",
       "owner_package": "app/v1/package.json",
-      "check_script": "check:prepared",
-      "prepare_script": "prepare:app"
+      "check_script": "check:prepared"
     }
   }
 }

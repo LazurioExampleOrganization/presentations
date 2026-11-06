@@ -3,6 +3,9 @@ import { viteShutdownPlugin } from "@lazurio/module-kit";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+// Vite builds the client of the built version (`bun run build` → dist/). A
+// development run does not use Vite: the Bun server bundles the client itself
+// (src/server.ts), so the App stays one process (Module Standard).
 export default defineConfig({
   plugins: [react(), viteShutdownPlugin()],
   envDir: false,
