@@ -3,13 +3,15 @@ import type { DeckDetail, DeckSummary, HealthResponse } from "../model.ts";
 import { api } from "./api.ts";
 import { DeckCard } from "./components/DeckCard.tsx";
 import { DeckDrawer } from "./components/DeckDrawer.tsx";
+import { plural, useMessages } from "./i18n.ts";
 
-const agentBrief = (context: HealthResponse | null) =>
-  `V Modulu ${context ? `${context.company}/${context.module}` : "Presentations"} vytvoř novou prezentaci. Nejprve se mě zeptej na účel, publikum, požadovaný výsledek a schválené zdroje. Navrhni osnovu k odsouhlasení. Použij Knowledgebase a design systém mojí Organizace, jsou-li dostupné; chybějící fakta a identitu nevymýšlej. Vytvoř samostatný HTML deck s metadaty, ovládáním šipkami, print CSS a skutečným JPEG náhledem prvního slidu. Původní ukázku zachovej. Výsledek mi ukaž v prohlížeči a připrav jako PR. Publikuj až na můj výslovný pokyn.`;
+const moduleName = (context: HealthResponse | null) =>
+  context ? `${context.company}/${context.module}` : "Presentations";
 
 type LoadState = "loading" | "ready" | "error";
 
 export default function App() {
+  const { language, m } = useMessages();
   const [context, setContext] = useState<HealthResponse | null>(null);
   const [showBrief, setShowBrief] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -25,7 +27,7 @@ export default function App() {
     setState("loading");
     setErrorMsg(null);
     try {
-      const [res, runtimeContext] = await Promise.all([api.listDecks(), api.context()]);
+      const [res, runtimeContext] = await Promise.all([api.listDecks(language), api.context()]);
       setContext(runtimeContext);
       setDecks(res.decks);
       setState("ready");
@@ -33,7 +35,7 @@ export default function App() {
       setErrorMsg(err instanceof Error ? err.message : String(err));
       setState("error");
     }
-  }, []);
+  }, [language]);
 
   useEffect(() => {
     void loadDecks();
@@ -43,23 +45,26 @@ export default function App() {
   // may commit its result, so opening deck B before A resolves never shows A.
   const detailRequestRef = useRef(0);
 
-  const openDetail = useCallback(async (slug: string) => {
-    const requestId = ++detailRequestRef.current;
-    setSelectedSlug(slug);
-    setDetail(null);
-    setDetailError(null);
-    setDetailLoading(true);
-    try {
-      const loaded = await api.deckDetail(slug);
-      if (detailRequestRef.current === requestId) setDetail(loaded);
-    } catch (err) {
-      if (detailRequestRef.current === requestId) {
-        setDetailError(err instanceof Error ? err.message : String(err));
+  const openDetail = useCallback(
+    async (slug: string) => {
+      const requestId = ++detailRequestRef.current;
+      setSelectedSlug(slug);
+      setDetail(null);
+      setDetailError(null);
+      setDetailLoading(true);
+      try {
+        const loaded = await api.deckDetail(slug, language);
+        if (detailRequestRef.current === requestId) setDetail(loaded);
+      } catch (err) {
+        if (detailRequestRef.current === requestId) {
+          setDetailError(err instanceof Error ? err.message : String(err));
+        }
+      } finally {
+        if (detailRequestRef.current === requestId) setDetailLoading(false);
       }
-    } finally {
-      if (detailRequestRef.current === requestId) setDetailLoading(false);
-    }
-  }, []);
+    },
+    [language],
+  );
 
   const closeDetail = useCallback(() => {
     detailRequestRef.current += 1;
@@ -71,33 +76,25 @@ export default function App() {
   return (
     <div className="app">
       <header className="app-header">
-        <strong className="app-name">Presentations</strong>
+        <strong className="app-name">{m.appName}</strong>
         <div className="app-header-meta">
           <span>
-            {decks.length}{" "}
-            {decks.length === 1
-              ? "prezentace"
-              : decks.length < 5 && decks.length > 0
-                ? "prezentace"
-                : "prezentací"}
+            {decks.length} {plural(decks.length, m.presentations, language)}
           </span>
           <button
             type="button"
             className="lz-button lz-button--secondary lz-button--small"
             onClick={() => void loadDecks()}
           >
-            Obnovit
+            {m.refresh}
           </button>
         </div>
       </header>
 
       <main className="app-main">
         <div className="page-head">
-          <h1 className="lz-type-display">Vaše prezentace</h1>
-          <p className="page-lede">
-            Vytvářejte prezentace s Agentem, prohlížejte podklady a promítejte hotové slidy. Každá
-            prezentace zůstává ve vaší Organizaci.
-          </p>
+          <h1 className="lz-type-display">{m.heading}</h1>
+          <p className="page-lede">{m.lede}</p>
         </div>
 
         <div className="authoring">
@@ -108,51 +105,49 @@ export default function App() {
             aria-expanded={showBrief}
             onClick={() => setShowBrief(!showBrief)}
           >
-            Vytvořit s Agentem
+            {m.create}
           </button>
-          <p className="hint">
-            Začněte účelem, publikem a podklady. Agent připraví osnovu i slidy.
-          </p>
+          <p className="hint">{m.createHint}</p>
         </div>
         {showBrief ? (
-          <section className="brief-panel" aria-label="Zadání pro Agenta">
-            <h2>Zadání pro Agenta</h2>
-            <p>
-              Předejte toto zadání Agentovi ve svém Prostředí. Doplní s vámi obsah a ukáže návrh
-              před publikací.
-            </p>
+          <section className="brief-panel" aria-label={m.briefHeading}>
+            <h2>{m.briefHeading}</h2>
+            <p>{m.briefIntro}</p>
             <div className="lz-field">
-              <textarea aria-label="Text zadání" rows={6} readOnly value={agentBrief(context)} />
+              <textarea
+                aria-label={m.briefLabel}
+                rows={6}
+                readOnly
+                value={m.brief(moduleName(context))}
+              />
             </div>
             <button
               type="button"
               className="lz-button lz-button--secondary"
               onClick={async () => {
                 try {
-                  await navigator.clipboard.writeText(agentBrief(context));
+                  await navigator.clipboard.writeText(m.brief(moduleName(context)));
                   setCopied(true);
                 } catch {
                   setCopied(false);
                 }
               }}
             >
-              {copied ? "Zkopírováno" : "Kopírovat zadání"}
+              {copied ? m.copied : m.copyBrief}
             </button>
             <p className="hint" role="status">
-              {copied
-                ? "Zadání je připravené k vložení do chatu s Agentem."
-                : "Text můžete také označit a zkopírovat ručně."}
+              {copied ? m.copiedHint : m.copyHint}
             </p>
           </section>
         ) : null}
 
-        {state === "loading" ? <div className="state">Načítám prezentace…</div> : null}
+        {state === "loading" ? <div className="state">{m.loading}</div> : null}
         {state === "error" ? (
-          <div className="state state-error">Nepodařilo se načíst prezentace: {errorMsg}</div>
+          <div className="state state-error">
+            {m.loadFailed} {errorMsg}
+          </div>
         ) : null}
-        {state === "ready" && decks.length === 0 ? (
-          <div className="state">Knihovna je prázdná. První prezentaci vytvořte s Agentem.</div>
-        ) : null}
+        {state === "ready" && decks.length === 0 ? <div className="state">{m.empty}</div> : null}
         {state === "ready" && decks.length > 0 ? (
           <div className="deck-grid">
             {decks.map((deck) => (
@@ -161,7 +156,7 @@ export default function App() {
           </div>
         ) : null}
 
-        <footer className="app-footer">Tvorba s Agentem · obsah pod vaší kontrolou</footer>
+        <footer className="app-footer">{m.footer}</footer>
       </main>
 
       {selectedSlug ? (

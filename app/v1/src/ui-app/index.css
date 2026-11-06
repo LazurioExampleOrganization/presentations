@@ -330,3 +330,24 @@ a {
     padding: var(--lz-space-24);
   }
 }
+.personal-version {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lz-space-12);
+}
+.personal-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--lz-space-12);
+}
+.personal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lz-space-16);
+}
+@media (max-width: 560px) {
+  .personal-fields {
+    grid-template-columns: 1fr;
+  }
+}

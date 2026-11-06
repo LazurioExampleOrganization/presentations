@@ -13,6 +13,17 @@ export type DeckExportsMeta = {
   vector_backup_kind?: string;
 };
 
+/** One language of a deck built from its source (`deck:build`). */
+export type DeckVariantMeta = {
+  language?: string;
+  file?: string;
+  title?: string;
+  owner?: string;
+  audience?: string[];
+  sources?: string[];
+  primary_goal?: string;
+};
+
 export type DeckMeta = {
   schema_version?: string;
   title?: string;
@@ -30,6 +41,9 @@ export type DeckMeta = {
   contrast_policy?: string;
   portfolio_model?: string;
   client_facing?: boolean;
+  /** Every language of the deck, the primary first (decks built from a source). */
+  variants?: DeckVariantMeta[];
+  slides?: { type?: string; title?: string }[];
 };
 
 /** An actual exported file found on disk under decks/<slug>/exports. */
@@ -53,8 +67,12 @@ export type DeckSummary = {
   slideCount: number;
   hasMeta: boolean;
   exportCount: number;
-  /** URL that opens/presents the deck (the self-contained index.html). */
+  /** URL that opens/presents the deck in `language` (index.html or index.<language>.html). */
   deckUrl: string;
+  /** The first-slide preview in `language`. */
+  previewUrl: string;
+  /** Every language the deck has; `language` is the one this summary shows. */
+  languages: string[];
 };
 
 /** Full detail shown in the deck drawer. */

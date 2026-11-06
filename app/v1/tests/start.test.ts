@@ -19,7 +19,7 @@ if (!entrypoint) throw new Error("lazurio.runtime declares no listener");
 const variable = `LAZURIO_RUNTIME_LISTENER_${entrypoint.id.toUpperCase().replaceAll("-", "_")}`;
 const baseEnv = { HOME: process.env.HOME ?? "", PATH: dirname(process.execPath) };
 const startTimeoutMs = 60_000;
-const starterSlug = "2026-10-11-project-proposal";
+const starterSlug = "2026-11-02-example-office-coffee";
 const cleanup: string[] = [];
 
 afterAll(() => {

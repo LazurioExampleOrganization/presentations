@@ -1,0 +1,95 @@
+{
+  "schema_version": "lazurio.presentation.deck.v1",
+  "generated_from": "deck.source.json",
+  "title": "Example · Káva pro vaši kancelář",
+  "purpose": "offer",
+  "status": "synthetic-example",
+  "language": "cs",
+  "created_at": "2026-11-02",
+  "updated_at": "2026-11-06",
+  "owner": "Obchodní tým Example",
+  "audience": [
+    "Provozní manažeři kanceláří",
+    "Vedení menších firem"
+  ],
+  "sources": [
+    "Vymyšlená ukázka; Example ani její klienti neexistují."
+  ],
+  "primary_goal": "Ukázat všechny typy slidů na jedné nabídce vymyšlené firmy Example.",
+  "variants": [
+    {
+      "language": "cs",
+      "file": "index.html",
+      "title": "Example · Káva pro vaši kancelář",
+      "owner": "Obchodní tým Example",
+      "audience": [
+        "Provozní manažeři kanceláří",
+        "Vedení menších firem"
+      ],
+      "sources": [
+        "Vymyšlená ukázka; Example ani její klienti neexistují."
+      ],
+      "primary_goal": "Ukázat všechny typy slidů na jedné nabídce vymyšlené firmy Example."
+    },
+    {
+      "language": "en",
+      "file": "index.en.html",
+      "title": "Example · Coffee for your office",
+      "owner": "Example sales team",
+      "audience": [
+        "Office managers",
+        "Leaders of small companies"
+      ],
+      "sources": [
+        "An invented sample; neither Example nor its clients exist."
+      ],
+      "primary_goal": "Show every slide type on one offer of the invented company Example."
+    }
+  ],
+  "slides": [
+    {
+      "type": "title",
+      "title": "Káva, která se o sebe postará"
+    },
+    {
+      "type": "problem",
+      "title": "Kancelářská káva dnes stojí víc, než se zdá"
+    },
+    {
+      "type": "metrics",
+      "title": "Lepší kávu s námi pije už 86 kanceláří"
+    },
+    {
+      "type": "section",
+      "title": "Jak to funguje"
+    },
+    {
+      "type": "options",
+      "title": "Vyberte balíček podle velikosti týmu"
+    },
+    {
+      "type": "timeline",
+      "title": "Od ochutnávky k první kávě za dva týdny"
+    },
+    {
+      "type": "video",
+      "title": "Instalace za jedno dopoledne"
+    },
+    {
+      "type": "case",
+      "title": "Ukázkové studio řeší kávu jednou za měsíc"
+    },
+    {
+      "type": "quote",
+      "title": "Provozní manažerka"
+    },
+    {
+      "type": "closing",
+      "title": "Ochutnejte u vás v kanceláři"
+    },
+    {
+      "type": "appendix",
+      "title": "Co obsahují balíčky"
+    }
+  ]
+}

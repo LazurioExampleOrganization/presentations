@@ -135,9 +135,10 @@ async function route(req: Request): Promise<Response> {
       module: appPackage.lazurio.runtime.module,
     } satisfies HealthResponse);
   }
+  const language = url.searchParams.get("lang") ?? undefined;
   if (req.method === "GET" && pathname === "/api/decks") {
     return Response.json({
-      decks: await getDeckSummaries(),
+      decks: await getDeckSummaries(language),
       generatedAt: new Date().toISOString(),
     });
   }
@@ -149,7 +150,7 @@ async function route(req: Request): Promise<Response> {
     } catch {
       return Response.json({ error: "malformed_slug" }, { status: 400 });
     }
-    const detail = await getDeckDetail(slug);
+    const detail = await getDeckDetail(slug, language);
     if (!detail) return Response.json({ error: "not_found" }, { status: 404 });
     return Response.json(detail);
   }
