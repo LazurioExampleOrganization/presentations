@@ -3,7 +3,7 @@
 The release version (semver) is independent of the app generation
 (`app/v1`).
 
-## 0.1.1 — proposed, not released
+## 0.1.1 — 2026-11-08
 
 A fix release: Lazurio runs the built version from `main` instead of the
 development server. The App stays generation `app/v1` and stack profile
