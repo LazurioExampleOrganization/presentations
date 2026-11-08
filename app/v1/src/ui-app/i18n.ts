@@ -83,8 +83,11 @@ export type UiMessages = {
   exports: string;
   noExports: string;
   languages: string;
+  help: string;
   personalHeading: string;
   personalIntro: string;
+  personalUnavailable: string;
+  personalUnavailableHelp: string;
   personalName: string;
   personalOrganization: string;
   personalLink: string;
@@ -143,9 +146,13 @@ const cs: UiMessages = {
   noExports:
     "Zatím není uložené žádné PDF. Otevřete prezentaci a zvolte Tisk / PDF; slidy jsou připravené pro stránky v poměru 16:9.",
   languages: "Jazyky",
+  help: "Nápověda",
   personalHeading: "Osobní verze",
   personalIntro:
     "Připravte odkaz pro konkrétního zájemce: na titulním a závěrečném slidu uvidí, pro koho je prezentace připravená.",
+  personalUnavailable: "Tato prezentace osobní verzi nemá.",
+  personalUnavailableHelp:
+    "Osobní verzi umí prezentace sestavené ze zdroje (deck.source.json), pokud ji nevypínají (personal: false). Ruční prezentace z verze 0.1 ji nemají: Agent je převede do zdroje skillem deck-from-sources.",
   personalName: "Jméno zájemce",
   personalOrganization: "Organizace zájemce",
   personalLink: "Odkaz",
@@ -215,9 +222,13 @@ const en: UiMessages = {
   noExports:
     "No PDF is stored yet. Open the presentation and choose Print / PDF; the slides are laid out for 16:9 pages.",
   languages: "Languages",
+  help: "Help",
   personalHeading: "Personal version",
   personalIntro:
     "Prepare a link for one prospect: the title and closing slides show who the presentation was prepared for.",
+  personalUnavailable: "This presentation has no personal version.",
+  personalUnavailableHelp:
+    "Presentations built from a source (deck.source.json) make a personal version unless they turn it off (personal: false). Hand-written presentations of release 0.1 have none: the Agent converts them into a source with the skill deck-from-sources.",
   personalName: "Prospect's name",
   personalOrganization: "Prospect's Organization",
   personalLink: "Link",

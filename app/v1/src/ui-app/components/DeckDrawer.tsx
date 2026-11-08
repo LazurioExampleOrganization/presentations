@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from "react";
+import { type ReactNode, useEffect, useId, useState } from "react";
 import type { DeckDetail } from "../../model.ts";
 import { formatBytes, metadataLabel, personalLink, slideLabel } from "../format.ts";
 import { useMessages } from "../i18n.ts";
@@ -10,6 +10,42 @@ function Row({ label, value }: { label: string; value: string | null }) {
       <dt>{label}</dt>
       <dd>{value}</dd>
     </>
+  );
+}
+
+/** The explanation behind a "?" next to a heading; it opens on click and on touch. */
+function Help({ children }: { children: ReactNode }) {
+  const { m } = useMessages();
+  return (
+    <details className="help">
+      <summary aria-label={m.help} title={m.help}>
+        ?
+      </summary>
+      <div className="help-body">{children}</div>
+    </details>
+  );
+}
+
+/** Personal version: offered only for a deck that renders it from its link. */
+function PersonalSection({ deckUrl, supported }: { deckUrl: string; supported: boolean }) {
+  const { m } = useMessages();
+  return (
+    <section className="drawer-section personal-version">
+      <div className="section-head">
+        <h3>{m.personalHeading}</h3>
+        <Help>
+          <p>{supported ? m.personalIntro : m.personalUnavailableHelp}</p>
+          {supported ? <p>{m.personalHint}</p> : null}
+        </Help>
+      </div>
+      {supported ? (
+        <PersonalVersion deckUrl={deckUrl} />
+      ) : (
+        <p className="hint" data-personal-unavailable>
+          {m.personalUnavailable}
+        </p>
+      )}
+    </section>
   );
 }
 
@@ -25,9 +61,7 @@ function PersonalVersion({ deckUrl }: { deckUrl: string }) {
   const ready = name.trim() !== "" || organization.trim() !== "";
   const link = ready ? personalLink(window.location.origin, deckUrl, name, organization) : "";
   return (
-    <section className="drawer-section personal-version">
-      <h3>{m.personalHeading}</h3>
-      <p className="hint">{m.personalIntro}</p>
+    <>
       <div className="personal-fields">
         <div className="lz-field">
           <label htmlFor={nameId}>{m.personalName}</label>
@@ -90,8 +124,7 @@ function PersonalVersion({ deckUrl }: { deckUrl: string }) {
           </div>
         </>
       ) : null}
-      <p className="hint">{m.personalHint}</p>
-    </section>
+    </>
   );
 }
 
@@ -200,7 +233,7 @@ export function DeckDrawer({
               </section>
             ) : null}
 
-            <PersonalVersion deckUrl={detail.deckUrl} />
+            <PersonalSection deckUrl={detail.deckUrl} supported={detail.personal} />
 
             {detail.sources.length > 0 ? (
               <section className="drawer-section">

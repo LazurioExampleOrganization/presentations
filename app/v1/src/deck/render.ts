@@ -96,6 +96,8 @@ export function deckMeta(source: DeckSource) {
     audience: primary.audience,
     sources: primary.sources,
     primary_goal: primary.primary_goal,
+    /** The pages show "Prepared for …" from the link (`?for=`, `?org=`). */
+    personal: source.personal !== false,
     variants,
     slides: source.slides.map((slide) => ({
       type: slide.type,

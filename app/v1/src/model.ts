@@ -43,6 +43,8 @@ export type DeckMeta = {
   client_facing?: boolean;
   /** Every language of the deck, the primary first (decks built from a source). */
   variants?: DeckVariantMeta[];
+  /** The deck shows "Prepared for …" from its link (decks built from a source). */
+  personal?: boolean;
   slides?: { type?: string; title?: string }[];
 };
 
@@ -73,6 +75,12 @@ export type DeckSummary = {
   previewUrl: string;
   /** Every language the deck has; `language` is the one this summary shows. */
   languages: string[];
+  /**
+   * The deck makes a personal version from its link (`?for=`, `?org=`): only a
+   * deck built from a source that does not turn it off. A hand-written deck
+   * and a source with `personal: false` ignore the link.
+   */
+  personal: boolean;
 };
 
 /** Full detail shown in the deck drawer. */

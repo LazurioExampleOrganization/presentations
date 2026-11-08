@@ -16,6 +16,7 @@
     "Vymyšlená ukázka; Example ani její klienti neexistují."
   ],
   "primary_goal": "Ukázat všechny typy slidů na jedné nabídce vymyšlené firmy Example.",
+  "personal": true,
   "variants": [
     {
       "language": "cs",

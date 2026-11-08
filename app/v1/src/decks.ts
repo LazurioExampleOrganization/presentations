@@ -183,6 +183,7 @@ function buildSummary(
     deckUrl: `/decks/${slug}/${file}`,
     previewUrl: `/previews/${preview}`,
     languages: variants.length > 0 ? variants.map((variant) => variant.language as string) : [],
+    personal: meta?.personal === true,
   };
 }
 

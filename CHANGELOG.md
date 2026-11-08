@@ -31,7 +31,9 @@ skills for agents. The App stays generation `app/v1` and stack profile
   language.
 - **Personal version**: `?for=<name>&org=<organization>` (in Czech also
   `?pro=` and `&firma=`) shows "Prepared for …" on the title and closing
-  slides; nothing is stored. The library's detail builds the link.
+  slides; nothing is stored. The library's detail builds the link for a
+  deck that makes one (`personal` in `deck.meta.json`); for a hand-written
+  deck or a source with `personal: false` it says that the deck has none.
 - **Czech and English**: the library follows `?lang=`, else the `locale`
   of `/.lazurio/shell.json`, else `app/v1/src/instance.ts` (Czech by
   default); a deck can carry both languages, each with its own page,
