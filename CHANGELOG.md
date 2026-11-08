@@ -104,6 +104,11 @@ development server. The App stays generation `app/v1` and stack profile
   built version (LazurioPlatform v0.1.11 or newer) is named.
 - `docs/release.md` and `docs/marketplace.md` no longer promise an archive
   digest in the registry entry.
+- The empty start of `docs/adoption.md` passes `bun run check`: the start,
+  design and discovery tests work with an empty library, everything about the
+  starter is in `tests/template-seed.test.ts`, `data/v1/decks/.gitkeep` keeps
+  the library's directory in a fresh checkout, and
+  `tests/empty-start.test.ts` runs the whole suite on such a checkout.
 
 ### For adopted modules
 
