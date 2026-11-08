@@ -4,6 +4,7 @@ import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import packageJson from "../package.json";
+import { listDeckSlugs } from "../src/decks.ts";
 
 // The start contract of the Lazurio Module Standard. Lazurio runs `dev_script`
 // for a development run and, from `main`, `build_script` and then
@@ -19,7 +20,8 @@ if (!entrypoint) throw new Error("lazurio.runtime declares no listener");
 const variable = `LAZURIO_RUNTIME_LISTENER_${entrypoint.id.toUpperCase().replaceAll("-", "_")}`;
 const baseEnv = { HOME: process.env.HOME ?? "", PATH: dirname(process.execPath) };
 const startTimeoutMs = 60_000;
-const starterSlug = "2026-10-11-project-proposal";
+// A deck of the library, when it has one; an empty start has none.
+const [anyDeck] = await listDeckSlugs();
 const cleanup: string[] = [];
 
 afterAll(() => {
@@ -48,8 +50,10 @@ describe("start contract", () => {
         expect(page.status).toBe(200);
         expect(await page.text()).toContain('id="root"');
         expect((await fetch(`${origin}/lazurio/tokens.css`)).status).toBe(200);
-        expect((await fetch(`${origin}/previews/${starterSlug}.jpg`)).status).toBe(200);
-        expect((await fetch(`${origin}/decks/${starterSlug}/`)).status).toBe(200);
+        if (anyDeck) {
+          expect((await fetch(`${origin}/previews/${anyDeck}.jpg`)).status).toBe(200);
+          expect((await fetch(`${origin}/decks/${anyDeck}/`)).status).toBe(200);
+        }
       });
     },
     startTimeoutMs + 30_000,
@@ -70,7 +74,7 @@ describe("start contract", () => {
       expect(build.exitCode, build.stderr.toString()).toBe(0);
       const output = join(app, runtime.build_output);
       expect(existsSync(join(output, "index.html"))).toBe(true);
-      expect(existsSync(join(output, "previews", `${starterSlug}.jpg`))).toBe(true);
+      if (anyDeck) expect(existsSync(join(output, "previews", `${anyDeck}.jpg`))).toBe(true);
 
       // Lazurio installs the build outside the checkout; a marker proves the
       // server reads that copy and not the package's own dist/.
@@ -100,8 +104,10 @@ describe("start contract", () => {
           expect(await route.text()).toContain('id="root"');
           expect((await fetch(`${origin}/missing.js`)).status).toBe(404);
           expect((await fetch(`${origin}/..%2f..%2fpackage.json`)).status).toBe(404);
-          expect((await fetch(`${origin}/previews/${starterSlug}.jpg`)).status).toBe(200);
-          expect((await fetch(`${origin}/decks/${starterSlug}/`)).status).toBe(200);
+          if (anyDeck) {
+            expect((await fetch(`${origin}/previews/${anyDeck}.jpg`)).status).toBe(200);
+            expect((await fetch(`${origin}/decks/${anyDeck}/`)).status).toBe(200);
+          }
         },
       );
     },

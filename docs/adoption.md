@@ -93,8 +93,11 @@ ancestor so later releases merge normally. Resolve overlaps:
 - Take the template's app source, tests, design snapshot, starter deck and
   preview. Remove the scaffold greeting and its test; the template serves
   through one Bun server and uses Vite only for the build.
-- Empty start: remove `data/v1/decks/2026-10-11-project-proposal/` and its
-  preview, and adjust `tests/template-seed.test.ts` to expect an empty library.
+- Empty start: remove `data/v1/decks/2026-10-11-project-proposal/`, its
+  preview `app/v1/public/previews/2026-10-11-project-proposal.jpg` and
+  `app/v1/tests/template-seed.test.ts`. Nothing else names the starter, and
+  `data/v1/decks/.gitkeep` keeps the empty library in Git;
+  `tests/empty-start.test.ts` checks exactly this path.
 - Record the adopted release (tag and commit) in the module README.
 
 Then in `app/v1`: `bun install --frozen-lockfile` and `bun run check` (it
