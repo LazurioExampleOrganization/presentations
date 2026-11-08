@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path, { sep } from "node:path";
@@ -14,6 +14,10 @@ import {
 
 // A valid deck slug for the lexical containment checks; no such deck needs to exist.
 const KNOWN_DECK = "2026-11-02-example-office-coffee";
+
+// The fixtures below live in the decks store; an empty library still has the
+// store (data/v1/decks/.gitkeep), and a checkout without it gets it here.
+beforeAll(() => mkdir(DECKS_ROOT, { recursive: true }));
 
 describe("deck discovery", () => {
   test("handles a deck without deck.meta.json", async () => {

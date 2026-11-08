@@ -13,14 +13,15 @@ import {
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 
-// docs/adoption.md, "Empty start": what an Organization removes to start with
-// an empty library. The test makes a fresh checkout of the tree without these
+// docs/adoption.md, "Empty start", and docs/extending.md, "From 0.1.x to
+// 0.2.0": what an Organization removes to start with an empty library. The test makes a fresh checkout of the tree without these
 // paths (Git keeps no empty directory, so only tracked files are copied) and
 // runs the whole suite there. The run inside sets CHILD and skips this test.
 const EMPTY_START_REMOVES = [
-  "data/v1/decks/2026-10-11-project-proposal",
-  "app/v1/public/previews/2026-10-11-project-proposal.jpg",
-  "app/v1/tests/template-seed.test.ts",
+  "data/v1/decks/2026-11-02-example-office-coffee",
+  "app/v1/public/previews/2026-11-02-example-office-coffee.jpg",
+  "app/v1/public/previews/2026-11-02-example-office-coffee.en.jpg",
+  "app/v1/tests/sample-deck.test.ts",
 ];
 const CHILD = "PRESENTATIONS_EMPTY_START_CHILD";
 const root = resolve(import.meta.dir, "..", "..", "..");
@@ -35,8 +36,10 @@ afterAll(() => {
 test.skipIf(process.env[CHILD] === "1")(
   "an empty start as docs/adoption.md describes it passes the checks on a fresh checkout",
   () => {
-    const adoption = readFileSync(join(root, "docs/adoption.md"), "utf8");
-    for (const path of EMPTY_START_REMOVES) expect(adoption, path).toContain(path);
+    for (const doc of ["docs/adoption.md", "docs/extending.md"]) {
+      const text = readFileSync(join(root, doc), "utf8");
+      for (const path of EMPTY_START_REMOVES) expect(text, `${doc}: ${path}`).toContain(path);
+    }
 
     const listed = Bun.spawnSync(["git", "-c", "core.quotePath=false", "ls-files", "-z"], {
       cwd: root,
@@ -69,7 +72,7 @@ test.skipIf(process.env[CHILD] === "1")(
     expect(run.exitCode, output).toBe(0);
     expect(output).toMatch(/\b0 fail\b/);
     expect(output).toMatch(/\b[1-9]\d* pass\b/);
-    expect(output).not.toContain("template-seed");
+    expect(output).not.toContain("sample-deck");
   },
   240_000,
 );

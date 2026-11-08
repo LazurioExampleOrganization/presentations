@@ -7,12 +7,13 @@ import { DECKS_ROOT } from "../src/paths.ts";
 
 // The sample deck of the template: the invented company Example, every slide
 // type, Czech and English. An Organization that starts empty deletes the
-// deck's directory, its two previews and this file (docs/adoption.md).
+// deck's directory, its two previews and this file (docs/adoption.md); one
+// that keeps it may add its own decks beside it.
 const SAMPLE = "2026-11-02-example-office-coffee";
 
 describe("the sample deck", () => {
-  test("is the only deck of a fresh adoption", async () => {
-    expect((await getDeckSummaries()).map((deck) => deck.slug)).toEqual([SAMPLE]);
+  test("is in the library", async () => {
+    expect((await getDeckSummaries()).map((deck) => deck.slug)).toContain(SAMPLE);
   });
 
   test("uses every slide type, in Czech and English, with invented content", () => {
@@ -61,6 +62,8 @@ describe("the sample deck", () => {
   });
 
   test("has a first-slide preview per language", async () => {
-    expect(await expectedPreviews()).toEqual([SAMPLE, `${SAMPLE}.en`]);
+    const previews = await expectedPreviews();
+    expect(previews).toContain(SAMPLE);
+    expect(previews).toContain(`${SAMPLE}.en`);
   });
 });

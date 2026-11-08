@@ -122,9 +122,10 @@ the merge does and what to decide:
    (`git checkout HEAD -- <paths>`); it keeps working as a hand-written
    deck.
 3. **Conflicts.** `app/v1/package.json`: keep your `lazurio.runtime` `id`,
-   `company` and `module`; take the rest. `tests/template-seed.test.ts` is
-   gone in 0.2.0: if you adjusted it for an empty start, delete it.
-   Files of your own decks never conflict.
+   `company` and `module`; take the rest. `app/v1/tests/template-seed.test.ts`
+   (the 0.1 starter's checks) is deleted in 0.2.0 together with the starter:
+   when Git reports it as modified on your side, delete it. Files of your own
+   decks never conflict.
 4. **The language.** Set `app/v1/src/instance.ts` `language` to the
    language of your Lazurio (the `locale` of the Folder profile, Settings →
    General) and confirm it with the person.
@@ -132,10 +133,15 @@ the merge does and what to decide:
    give one the new slide types, video and both languages, convert it into
    a `deck.source.json` with the skill `deck-from-sources` (same slides,
    same sources) in its own pull request.
-6. **The sample deck.** Keep it or delete its directory and its two
-   previews; the tests that name it (`tests/decks.test.ts`,
-   `tests/deck-build.test.ts`, the sample checks in `tests/template.test.ts`)
-   then expect your own decks instead.
+6. **The sample deck.** The merge adds it even when your module started
+   empty. Keep it, or delete
+   `data/v1/decks/2026-11-02-example-office-coffee/`,
+   `app/v1/public/previews/2026-11-02-example-office-coffee.jpg`,
+   `app/v1/public/previews/2026-11-02-example-office-coffee.en.jpg` and
+   `app/v1/tests/sample-deck.test.ts`, exactly as an empty start does
+   ([adoption.md](adoption.md)). No other test names the sample, so your own
+   decks need no test changes either way; `data/v1/decks/.gitkeep` keeps the
+   library's directory.
 7. `bun run deck:build`, `bun run check`, a look at the library and a deck
    in both languages, pull request.
 

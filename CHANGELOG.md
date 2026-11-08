@@ -49,9 +49,11 @@ skills for agents. The App stays generation `app/v1` and stack profile
 - Marketplace screens per language in `docs/screenshots/cs/` and
   `docs/screenshots/en/`.
 - Tests: the deck source, the build and its drift, escaping, the link
-  parameters, both languages, the sample deck, previews per language and
-  the template contract (license, documents, exact versions, screens,
-  skills, the design system subtree, paths that check out on Windows).
+  parameters, both languages, the sample deck, previews per language, the
+  template contract (license, documents, exact versions, screens, skills,
+  the design system subtree, paths that check out on Windows) and the empty
+  start on a fresh checkout (`tests/empty-start.test.ts`, now for the sample
+  deck: its directory, its two previews and `tests/sample-deck.test.ts`).
 
 ### Changed
 

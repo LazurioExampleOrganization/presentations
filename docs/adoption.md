@@ -100,8 +100,11 @@ ancestor so later releases merge normally. Resolve overlaps:
   language. Where the App's origin answers `/.lazurio/shell.json`, its
   `locale` wins.
 - Empty start: remove `data/v1/decks/2026-11-02-example-office-coffee/`,
-  its two previews in `app/v1/public/previews/` and
-  `app/v1/tests/sample-deck.test.ts`; nothing else names the sample.
+  its two previews `app/v1/public/previews/2026-11-02-example-office-coffee.jpg`
+  and `app/v1/public/previews/2026-11-02-example-office-coffee.en.jpg`, and
+  `app/v1/tests/sample-deck.test.ts`. Nothing else names the sample, and
+  `data/v1/decks/.gitkeep` keeps the empty library in Git;
+  `tests/empty-start.test.ts` checks exactly this path.
 - The design system: decks wear the brand of `design-system/`, the invented
   Example until the Organization makes it its own. For its own brand,
   follow `design-system/docs/adoption.md` step 7 inside `design-system/` in
