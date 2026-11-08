@@ -82,5 +82,7 @@ and keeps all its data fictional. It was adopted from
 with the copy. On every merge of a newer release the Organization keeps its
 identity: `lazurio.module.json` (`company`, port lease) and
 `lazurio.runtime` `id`, `company` and `module` in `app/v1/package.json`;
-everything else takes the template's side. Review and merge follow the
-Organization's root `AGENTS.md`.
+everything else takes the template's side. The one correction of its own is
+the status line of `docs/marketplace.md` (LazurioTemplates/presentations#7);
+the next release replaces it. Review and merge follow the Organization's root
+`AGENTS.md`.
