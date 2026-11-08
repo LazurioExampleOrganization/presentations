@@ -11,13 +11,20 @@ app UI is Czech for now) and is MIT licensed. All bundled content is fictional.
 
 - `lazurio.module.json` declares one app, `app/v1` (generation v1: no own data
   layer). Decks are Git files, not records in a database.
-- `app/v1` is one Bun server (`src/server.ts`) that serves the built React
+- `app/v1` is one Bun server (`src/server.ts`) that serves the React
   gallery, a same-origin read-only API, deck sources and derived PDFs.
   Listener settings come only from module-kit `listener("web")`.
+- From `main` Lazurio runs the built version: `build` (`build_script`) writes
+  the client to `dist` (`build_output`), and `start` (`start_script`) runs
+  the same server with `NODE_ENV=production`, serving the installed build
+  from `LAZURIO_RUNTIME_BUILD_OUTPUT`. A development run (`dev`) lets Bun
+  bundle the client itself. The preparation only checks that dependencies are
+  installed; it never builds.
 - Deck sources: `data/v1/decks/<date-slug>/index.html` with `.slide`
   sections, arrow navigation and print CSS, optional local assets and an
   optional `deck.meta.json`. Each deck needs a real first-slide JPEG in
-  `app/v1/public/previews/<date-slug>.jpg`.
+  `app/v1/public/previews/<date-slug>.jpg`; the client build refuses a deck
+  without one.
 - Derived PDFs go to `generated/v1/decks/<slug>/exports/`. The browser prints
   them; the app never generates or stores PDFs itself.
 - `app/v1/public/lazurio/` and each deck's `lazurio/` folder hold a frozen
@@ -36,7 +43,8 @@ generation change, see [docs/extending.md](docs/extending.md).
 - Work in a task worktree under `.worktrees/` and a pull request. Never push to
   `main`.
 - One gate: in `app/v1`, `bun install --frozen-lockfile` and `bun run check`
-  (typecheck, lint, preparation build, all tests). CI runs the same.
+  (typecheck, lint and all tests, which build the client and start both the
+  development run and the built version). CI runs the same.
 - For a UI or deck change, also open the app through the Lazurio lifecycle and
   check the gallery, detail, Agent brief and playback in the browser.
 - No cross-repository runtime imports, no `.env*`, no CDN fonts, no network
@@ -69,7 +77,8 @@ publication of a presentation.
 This module belongs to Lazurio Example Organization, which works in English
 and keeps all its data fictional. It was adopted from
 `LazurioTemplates/presentations` at `v0.1.0`
-(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`); `LICENSE` and `NOTICE` stay
+(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.1.1`
+(`68f539df31ad46ac938ae71346e7b3b17cd5b525`); `LICENSE` and `NOTICE` stay
 with the copy. On every merge of a newer release the Organization keeps its
 identity: `lazurio.module.json` (`company`, port lease) and
 `lazurio.runtime` `id`, `company` and `module` in `app/v1/package.json`;

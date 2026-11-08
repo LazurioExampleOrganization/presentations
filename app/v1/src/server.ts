@@ -1,19 +1,20 @@
-import { readFile, stat } from "node:fs/promises";
-import { extname, join, sep } from "node:path";
+import { readdir, readFile, stat } from "node:fs/promises";
+import { extname, join } from "node:path";
 import { listener, ModuleKitError, onShutdown } from "@lazurio/module-kit";
 import appPackage from "../package.json";
 import { getDeckDetail, getDeckSummaries } from "./decks.ts";
 import type { HealthResponse } from "./model.ts";
 import {
   DECKS_ROOT,
-  DIST_DIR,
   EXPORTS_ROOT,
   isRealpathWithinDecks,
   isRealpathWithinExports,
   isValidDeckSlug,
+  PUBLIC_DIR,
   resolveDeckPath,
   resolveExportPath,
 } from "./paths.ts";
+import { clientDirectory, createStaticHandler } from "./static.ts";
 
 const DECKS_PREFIX = "/decks/";
 const EXPORTS_PREFIX = "/exports/";
@@ -117,22 +118,6 @@ async function serveExport(pathname: string): Promise<Response | null> {
   return fileResponse(resolved);
 }
 
-/** Serve the built UI (production/preview) from dist/, with SPA fallback. */
-async function serveDist(pathname: string): Promise<Response | null> {
-  const cleaned = decodeURIComponent(pathname === "/" ? "/index.html" : pathname);
-  const safe = cleaned.replace(/^[\\/]+/, "");
-  if (safe.includes("..")) return null;
-  const filePath = join(DIST_DIR, safe);
-  if (filePath !== DIST_DIR && !filePath.startsWith(`${DIST_DIR}${sep}`)) return null;
-  try {
-    const stats = await stat(filePath);
-    if (stats.isFile()) return fileResponse(filePath);
-  } catch {
-    // fall through to caller's SPA fallback
-  }
-  return null;
-}
-
 async function route(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const pathname = url.pathname;
@@ -181,16 +166,23 @@ async function route(req: Request): Promise<Response> {
     return Response.json({ error: "not_found" }, { status: 404 });
   }
 
-  if (req.method === "GET" && !pathname.startsWith("/api/")) {
-    const staticResponse = await serveDist(pathname);
+  if ((req.method === "GET" || req.method === "HEAD") && !pathname.startsWith("/api/")) {
+    const staticResponse = await serveStatic(pathname);
     if (staticResponse) return staticResponse;
-    if (!extname(pathname)) {
-      const fallback = await serveDist("/index.html");
-      if (fallback) return fallback;
-    }
   }
 
   return Response.json({ error: "not_found" }, { status: 404 });
+}
+
+/** Development routes for the top-level entries of `public/` (Vite copies them into the build). */
+async function publicRoutes(): Promise<Record<string, typeof fetchWithErrors>> {
+  const entries = await readdir(PUBLIC_DIR, { withFileTypes: true }).catch(() => []);
+  return Object.fromEntries(
+    entries.map((entry) => [
+      entry.isDirectory() ? `/${entry.name}/*` : `/${entry.name}`,
+      fetchWithErrors,
+    ]),
+  );
 }
 
 function isLoopbackHost(host: string): boolean {
@@ -222,9 +214,34 @@ if (!isLoopbackHost(web.host)) {
   process.exit(2);
 }
 
-const server = Bun.serve({ hostname: web.host, port: web.port, fetch: fetchWithErrors });
+// The built version (`start_script` from `main`, NODE_ENV=production) serves
+// the client build; a development run lets Bun bundle the client itself
+// (HTML import with hot reload) and serves `public/` beside it. One process
+// either way (Module Standard, "One process").
+const production = process.env.NODE_ENV === "production";
+const clientRoot = production ? clientDirectory() : PUBLIC_DIR;
+const serveStatic = createStaticHandler(clientRoot, { spa: production });
+
+const server = production
+  ? Bun.serve({ hostname: web.host, port: web.port, fetch: fetchWithErrors })
+  : Bun.serve({
+      hostname: web.host,
+      port: web.port,
+      development: { hmr: true, console: false },
+      routes: {
+        "/api/*": fetchWithErrors,
+        "/decks/*": fetchWithErrors,
+        "/exports/*": fetchWithErrors,
+        ...(await publicRoutes()),
+        "/*": (await import("../index.html")).default,
+      },
+      fetch: fetchWithErrors,
+    });
 onShutdown(() => server.stop(true));
 
-console.log(`Presentation app/v1 running at http://${server.hostname}:${server.port}`);
+console.log(
+  `Presentation app/v1 (${production ? "built version" : "development"}) running at http://${server.hostname}:${server.port}`,
+);
+console.log(`[presentation] client: ${production ? clientRoot : "bundled by Bun"}`);
 console.log(`[presentation] decks: ${DECKS_ROOT}`);
 console.log(`[presentation] exports: ${EXPORTS_ROOT}`);

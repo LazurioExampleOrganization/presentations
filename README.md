@@ -60,5 +60,6 @@ adopted from the Lazurio Marketplace template
 [`LazurioTemplates/presentations`](https://github.com/LazurioTemplates/presentations)
 at release `v0.1.0` (commit `4b023772fbe45c2209b6eb1ff44009239ed1ac99`) by
 merging it into this repository, so later releases arrive as ordinary merges
-([docs/extending.md](docs/extending.md)). It starts with the synthetic example
-presentation of that release.
+([docs/extending.md](docs/extending.md)); the current release is `v0.1.1`
+(commit `68f539df31ad46ac938ae71346e7b3b17cd5b525`). It starts with the
+synthetic example presentation of the template.
