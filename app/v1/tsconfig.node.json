@@ -25,6 +25,9 @@
     "src/prepared.ts",
     "src/paths.ts",
     "src/model.ts",
-    "src/decks.ts"
+    "src/decks.ts",
+    "src/static.ts",
+    "src/previews.ts",
+    "src/check-previews.ts"
   ]
 }

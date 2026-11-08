@@ -1,6 +1,6 @@
 # Presentations — marketplace listing
 
-**Status:** release 0.1.0 prepared, not yet published. **Author:** Lazurio.
+**Status:** release 0.1.0 published; 0.1.1 proposed, not released. **Author:** Lazurio.
 **License:** MIT, see [LICENSE](../LICENSE) and [NOTICE](../NOTICE).
 **Price:** free. **Source:** this repository,
 `LazurioTemplates/presentations`. **Support:** Issues in this
@@ -28,8 +28,9 @@ synthetic starter, taken at twice the pixel density and scaled to 1600 px
 wide (WebP, metadata stripped). Retake them whenever a release changes what
 the app looks like.
 
-The catalog entry pins the release by its tag, full commit and archive digest.
-A tag or a branch alone is not the release identity.
+The catalog entry pins the release by its tag and the full commit the tag
+points to; its `artifactDigest` stays `null` until the registry records
+attested artifacts. A tag or a branch alone is not the release identity.
 
 Before each release:
 

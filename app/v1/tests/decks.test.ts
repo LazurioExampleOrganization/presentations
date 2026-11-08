@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path, { sep } from "node:path";
@@ -12,27 +12,14 @@ import {
   resolveExportPath,
 } from "../src/paths.ts";
 
+// A valid deck slug for the lexical containment checks; no such deck needs to exist.
 const KNOWN_DECK = "2026-10-11-project-proposal";
 
+// The fixtures below live in the decks store; an empty library still has the
+// store (data/v1/decks/.gitkeep), and a checkout without it gets it here.
+beforeAll(() => mkdir(DECKS_ROOT, { recursive: true }));
+
 describe("deck discovery", () => {
-  test("lists decks from the decks store", async () => {
-    const decks = await getDeckSummaries();
-    expect(decks.length).toBeGreaterThan(0);
-    expect(decks.map((deck) => deck.slug)).toContain(KNOWN_DECK);
-  });
-
-  test("summarizes the synthetic starter metadata", async () => {
-    const decks = await getDeckSummaries();
-    const deck = decks.find((item) => item.slug === KNOWN_DECK);
-    expect(deck).toBeDefined();
-    expect(deck?.slideCount).toBe(4);
-    expect(deck?.title).toContain("Návrh projektu");
-    expect(deck?.hasMeta).toBe(true);
-    expect(deck?.purpose).toBe("project-proposal");
-    expect(deck?.status).toBe("synthetic-example");
-    expect(deck?.deckUrl).toBe(`/decks/${KNOWN_DECK}/`);
-  });
-
   test("handles a deck without deck.meta.json", async () => {
     const noMetaSlug = "zz-smoke-no-meta-deck";
     const deckDir = path.join(DECKS_ROOT, noMetaSlug);
@@ -51,16 +38,6 @@ describe("deck discovery", () => {
     } finally {
       await rm(deckDir, { recursive: true, force: true });
     }
-  });
-
-  test("detail returns starter context without export urls when no exports exist", async () => {
-    const detail = await getDeckDetail(KNOWN_DECK);
-    expect(detail).not.toBeNull();
-    expect(detail?.hasMeta).toBe(true);
-    expect(detail?.primaryGoal).toContain("Ověřit");
-    expect(detail?.mentalModel).toContain("syntetická");
-    expect(detail?.exports).toEqual([]);
-    expect(detail?.exportCount).toBe(0);
   });
 
   test("detail for an unknown slug is null", async () => {

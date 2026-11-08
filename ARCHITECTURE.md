@@ -1,7 +1,9 @@
 # Architecture and extraction
 
-One Bun process serves the built React gallery, a same-origin read-only API,
-local HTML sources and derived PDFs. Decks are Git-native files. The authoring
+One Bun process serves the React gallery, a same-origin read-only API, local
+HTML sources and derived PDFs. From `main` Lazurio builds the gallery with
+Vite and starts the server in production, serving that build; a development
+run lets Bun bundle the gallery itself. Decks are Git-native files. The authoring
 button supplies a prompt for an existing Agent; it creates no chat and sends no
 data to an API. There is no browser-side mutation or separate content backend.
 
@@ -18,7 +20,7 @@ dependencies and is outside this initial HTML library.
 
 Important failures: paths/symlinks cannot escape deck/export stores; foreign
 Host headers are refused; missing listener settings stop startup; missing
-JPEG previews block preparation. Missing metadata and an empty library remain
+JPEG previews block the client build. Missing metadata and an empty library remain
 usable. The seed contract failed against the empty store, then passed against
 the actual gallery API with the synthetic sample.
 

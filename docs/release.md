@@ -11,9 +11,10 @@ commit; everything after it arrives through reviewed pull requests.
    release.
 4. With the owner's explicit approval: tag `v<version>` (annotated) on the
    commit and create the GitHub Release from CHANGELOG.md. Record the full
-   commit and the SHA-256 of the release's source archive.
-5. Pin the catalog entry to that tag, commit and digest through its own
-   reviewed PR in the Marketplace registry.
+   commit the tag points to.
+5. Pin the catalog entry to that tag and commit through its own reviewed PR
+   in the Marketplace registry. The entry's `artifactDigest` stays `null`
+   until the registry records attested artifacts.
 
 Visibility change, release and catalog publication are separate publication
 steps; each needs the owner's explicit instruction. A mistaken release is
