@@ -111,7 +111,9 @@ ancestor so later releases merge normally. Resolve overlaps:
   system, change that one line in `app/v1/package.json` to
   `git+ssh://git@github.com/<Organization>/design-system.git#v<version>`,
   then `bun install`, `bun run deck:build` and `bun run check`, in this pull
-  request or a later one ([design](design-system.md)). Known limit: the
+  request or a later one ([design](design-system.md)). The checks accept
+  that pin; the tests of the template alone skip once the identity is the
+  Organization's. Known limit: the
   module's CI cannot install a private design system yet
   (Lazurio/LazurioPlatform#915); the check runs on the Environment.
 - Record the adopted release (tag and commit) in the module README.

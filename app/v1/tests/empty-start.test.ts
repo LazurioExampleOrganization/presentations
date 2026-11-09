@@ -1,75 +1,34 @@
 import { afterAll, expect, test } from "bun:test";
-import {
-  cpSync,
-  existsSync,
-  mkdirSync,
-  mkdtempSync,
-  readFileSync,
-  realpathSync,
-  rmSync,
-  symlinkSync,
-  unlinkSync,
-} from "node:fs";
-import { tmpdir } from "node:os";
-import { dirname, join, resolve } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { join, resolve } from "node:path";
+import { freshCheckout, IS_NESTED_RUN } from "./support/fresh-checkout.ts";
 
 // docs/adoption.md, "Empty start", and docs/extending.md, "From 0.1.x to
-// 0.2.0": what an Organization removes to start with an empty library. The test makes a fresh checkout of the tree without these
-// paths (Git keeps no empty directory, so only tracked files are copied) and
-// runs the whole suite there. The run inside sets CHILD and skips this test.
+// 0.2.0": what an Organization removes to start with an empty library. The
+// test makes a fresh checkout of the tree without these paths and runs the
+// whole suite there.
 const EMPTY_START_REMOVES = [
   "data/v1/decks/2026-11-02-example-office-coffee",
   "app/v1/public/previews/2026-11-02-example-office-coffee.jpg",
   "app/v1/public/previews/2026-11-02-example-office-coffee.en.jpg",
   "app/v1/tests/sample-deck.test.ts",
 ];
-const CHILD = "PRESENTATIONS_EMPTY_START_CHILD";
 const root = resolve(import.meta.dir, "..", "..", "..");
-const work = mkdtempSync(join(realpathSync.native(tmpdir()), "presentations-empty-"));
-const modules = join(work, "app", "v1", "node_modules");
+const checkout = IS_NESTED_RUN ? null : freshCheckout("presentations-empty", EMPTY_START_REMOVES);
+afterAll(() => checkout?.dispose());
 
-afterAll(() => {
-  if (existsSync(modules)) unlinkSync(modules);
-  rmSync(work, { recursive: true, force: true });
-});
-
-test.skipIf(process.env[CHILD] === "1")(
+test.skipIf(IS_NESTED_RUN)(
   "an empty start as docs/adoption.md describes it passes the checks on a fresh checkout",
   () => {
+    if (!checkout) throw new Error("no fresh checkout");
     for (const doc of ["docs/adoption.md", "docs/extending.md"]) {
       const text = readFileSync(join(root, doc), "utf8");
       for (const path of EMPTY_START_REMOVES) expect(text, `${doc}: ${path}`).toContain(path);
     }
-
-    const listed = Bun.spawnSync(["git", "-c", "core.quotePath=false", "ls-files", "-z"], {
-      cwd: root,
-      stdout: "pipe",
-    });
-    const removed = (file: string) =>
-      EMPTY_START_REMOVES.some((path) => file === path || file.startsWith(`${path}/`));
-    for (const file of listed.stdout.toString().split("\0").filter(Boolean)) {
-      if (removed(file) || !existsSync(join(root, file))) continue;
-      mkdirSync(dirname(join(work, file)), { recursive: true });
-      cpSync(join(root, file), join(work, file));
-    }
-    Bun.spawnSync(["git", "init", "-q"], { cwd: work });
-    Bun.spawnSync(["git", "add", "-A"], { cwd: work });
     // The library's directory survives the removal only through its .gitkeep.
-    expect(existsSync(join(work, "data", "v1", "decks", ".gitkeep"))).toBe(true);
-
-    symlinkSync(
-      join(root, "app", "v1", "node_modules"),
-      modules,
-      process.platform === "win32" ? "junction" : "dir",
-    );
-    const run = Bun.spawnSync([process.execPath, "test", "tests"], {
-      cwd: join(work, "app", "v1"),
-      env: { ...process.env, [CHILD]: "1" },
-      stdout: "pipe",
-      stderr: "pipe",
-    });
-    const output = `${run.stdout.toString()}\n${run.stderr.toString()}`;
-    expect(run.exitCode, output).toBe(0);
+    expect(existsSync(join(checkout.root, "data", "v1", "decks", ".gitkeep"))).toBe(true);
+    const { exitCode, output } = checkout.runSuite();
+    expect(exitCode, output).toBe(0);
     expect(output).toMatch(/\b0 fail\b/);
     expect(output).toMatch(/\b[1-9]\d* pass\b/);
     expect(output).not.toContain("sample-deck");

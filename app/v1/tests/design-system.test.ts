@@ -10,6 +10,7 @@ import {
   SLIDE_TYPE_ROLES,
   slideScaleCss,
 } from "../src/deck/theme.ts";
+import { designSystemPinProblems } from "./support/design-system-pin.ts";
 
 // The design system is the package `design-system` at a released tag (Module
 // Standard: a design system's assets come as a dependency on its package,
@@ -20,12 +21,12 @@ const root = resolve(app, "..", "..");
 const decksRoot = join(root, "data", "v1", "decks");
 const sha256 = (file: string) => createHash("sha256").update(readFileSync(file)).digest("hex");
 
+// In the template and in an adopted module alike: the template's public pin
+// or the Organization's own design system over SSH (docs/design-system.md),
+// each a released tag locked to one commit (tests/design-system-pin.test.ts).
 test("the design system is a dependency on a released tag, never a path or a branch", () => {
   const spec = (packageJson.dependencies as Record<string, string>)["design-system"];
-  expect(spec).toMatch(
-    /^(github:[\w.-]+\/[\w.-]+|git\+ssh:\/\/git@github\.com\/[\w.-]+\/[\w.-]+\.git)#v\d+\.\d+\.\d+$/,
-  );
-  expect(readFileSync(join(app, "bun.lock"), "utf8")).toContain('"design-system@');
+  expect(designSystemPinProblems(spec, readFileSync(join(app, "bun.lock"), "utf8"))).toEqual([]);
   expect(existsSync(join(root, "design-system"))).toBe(false);
   expect(existsSync(join(app, "public", "lazurio"))).toBe(false);
 });

@@ -57,6 +57,12 @@ The imports stay the same, because both packages are named
 `design-system`. A new brand is a new release of that design system and a
 new pin here. See [extending.md](extending.md#the-design-system).
 
+The module's checks accept both pins, each a released tag with the lock
+`bun install` writes for it (`app/v1/tests/support/design-system-pin.ts`);
+the tests of the template alone (its placeholders, listing, screens and
+public pin) skip once `lazurio.module.json` carries the Organization's
+identity. `tests/adopted-copy.test.ts` runs the whole suite on such a copy.
+
 Font licenses cover the font files only. The template is distributed under
 the MIT License; the license grants no right to the Lazurio name and marks,
 see [NOTICE](../NOTICE).
