@@ -7,6 +7,7 @@ import {
   rmSync,
   symlinkSync,
   unlinkSync,
+  writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -24,7 +25,11 @@ const ROOT = resolve(import.meta.dir, "..", "..", "..", "..");
  */
 export function freshCheckout(prefix: string, remove: readonly string[] = []) {
   const work = mkdtempSync(join(realpathSync.native(tmpdir()), `${prefix}-`));
+  // Installed packages are never part of a checkout, also where a link to
+  // them was recorded by a copy's own Git (a link is no directory for
+  // `node_modules/` in .gitignore).
   const removed = (file: string) =>
+    file.split("/").includes("node_modules") ||
     remove.some((path) => file === path || file.startsWith(`${path}/`));
   const listed = Bun.spawnSync(["git", "-c", "core.quotePath=false", "ls-files", "-z"], {
     cwd: ROOT,
@@ -45,13 +50,20 @@ export function freshCheckout(prefix: string, remove: readonly string[] = []) {
   return {
     root: work,
     app,
-    /** Records the tree in Git (the tests read `git ls-files`) and runs the whole suite there. */
-    runSuite(): { exitCode: number; output: string } {
+    /**
+     * Records the tree in Git (the tests read `git ls-files`) and runs the
+     * whole suite there. `nested` (the default) skips the tests that make a
+     * checkout of their own; without it they run there too, once.
+     */
+    runSuite(nested = true): { exitCode: number; output: string } {
       Bun.spawnSync(["git", "init", "-q"], { cwd: work });
+      writeFileSync(join(work, ".git", "info", "exclude"), "/app/v1/node_modules\n");
       Bun.spawnSync(["git", "add", "-A"], { cwd: work });
+      const env: Record<string, string | undefined> = { ...process.env, [NESTED_RUN]: "1" };
+      if (!nested) delete env[NESTED_RUN];
       const run = Bun.spawnSync([process.execPath, "test", "tests"], {
         cwd: app,
-        env: { ...process.env, [NESTED_RUN]: "1" },
+        env,
         stdout: "pipe",
         stderr: "pipe",
       });

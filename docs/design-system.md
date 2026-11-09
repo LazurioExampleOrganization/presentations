@@ -61,7 +61,8 @@ The module's checks accept both pins, each a released tag with the lock
 `bun install` writes for it (`app/v1/tests/support/design-system-pin.ts`);
 the tests of the template alone (its placeholders, listing, screens and
 public pin) skip once `lazurio.module.json` carries the Organization's
-identity. `tests/adopted-copy.test.ts` runs the whole suite on such a copy.
+identity. `tests/adopted-copy.test.ts` runs the whole suite on such a copy,
+starting from either lock form, and on a module already pinned over SSH.
 
 Font licenses cover the font files only. The template is distributed under
 the MIT License; the license grants no right to the Lazurio name and marks,

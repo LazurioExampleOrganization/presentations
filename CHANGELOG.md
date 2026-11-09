@@ -67,8 +67,9 @@ Builds on 0.1.1.
   listing's status against the CHANGELOG, paths that check out on Windows),
   the design system in the library and in every built deck, an adopted copy
   with its own identity and its Organization's design system pinned over SSH
-  (`tests/adopted-copy.test.ts`; the tests of the template alone skip there,
-  the pin check accepts both forms with their lock), and the empty
+  (`tests/adopted-copy.test.ts`, from the template's github: lock and from a
+  module already pinned over SSH; the tests of the template alone skip
+  there, the pin check accepts both forms with their lock), and the empty
   start on a fresh checkout (`tests/empty-start.test.ts`, now for the sample
   deck: its directory, its two previews and `tests/sample-deck.test.ts`).
 
