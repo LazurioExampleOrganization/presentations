@@ -66,6 +66,28 @@ describe("template contract", () => {
     expect(packageJson.lazurio.runtime.id).toBe("replace-with-org-slug-presentations-v1");
   });
 
+  test("the listing's status names what the CHANGELOG released and proposes", () => {
+    const released: string[] = [];
+    const proposed: string[] = [];
+    for (const [, version, rest] of read("CHANGELOG.md").matchAll(
+      /^## (\d+\.\d+\.\d+) — (.+)$/gm,
+    )) {
+      if (!version || !rest) continue;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(rest)) released.push(version);
+      else if (rest === "proposed, not released") proposed.push(version);
+      else throw new Error(`CHANGELOG ${version}: "${rest}" is neither a date nor proposed`);
+    }
+    const list = (items: string[]) =>
+      items.length < 2 ? items.join("") : `${items.slice(0, -1).join(", ")} and ${items.at(-1)}`;
+    const ascending = (items: string[]) =>
+      [...items].sort((a, b) => a.localeCompare(b, "en", { numeric: true }));
+    const published = ascending(released);
+    expect(published.length).toBeGreaterThan(0);
+    let status = `${published.length === 1 ? "release" : "releases"} ${list(published)} published`;
+    if (proposed.length > 0) status += `; ${list(ascending(proposed))} proposed, not released`;
+    expect(read("docs/marketplace.md")).toContain(`**Status:** ${status}.`);
+  });
+
   test("the same Marketplace screens in Czech and English, WebP 1600 px wide", () => {
     const cs = readdirSync(join(root, "docs/screenshots/cs")).sort();
     const en = readdirSync(join(root, "docs/screenshots/en")).sort();

@@ -1,7 +1,7 @@
 # Presentations — marketplace listing
 
-**Status:** release 0.1.0 published; 0.1.1 and 0.2.0 proposed, not
-released. **Author:** Lazurio. **License:** MIT, see [LICENSE](../LICENSE)
+**Status:** releases 0.1.0 and 0.1.1 published; 0.2.0 proposed, not released.
+**Author:** Lazurio. **License:** MIT, see [LICENSE](../LICENSE)
 and [NOTICE](../NOTICE). **Price:** free. **Source:** this repository,
 `LazurioTemplates/presentations`. **Support:** Issues in this repository.
 
@@ -42,8 +42,9 @@ Before each release:
 2. Inspect `git ls-tree -r <commit>`: app source/config/tests, synthetic seed,
    matching JPEG, docs, LICENSE/NOTICE and reference manifests. No customer
    content, photos, unlicensed fonts, logos, PDFs or credentials belong here.
-   The Lazurio design snapshot and separately licensed Fontsource fonts are
-   recorded in docs/design-system.md and vendor.lock.json.
+   The design system is a dependency (`design-system` in
+   `app/v1/package.json`), never files of the tree; built decks carry its
+   stylesheet and fonts with their licenses (docs/design-system.md).
 3. Update NOTICE when new third-party files enter the tree.
 4. Confirm compatibility. Before the first public pilot counts as complete,
    adoption into a second Organization and an update preserving its own changes

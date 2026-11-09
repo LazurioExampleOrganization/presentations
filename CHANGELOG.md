@@ -64,7 +64,7 @@ Builds on 0.1.1.
   parameters, both languages, the sample deck, previews per language, the
   template contract (license, documents, exact versions, screens, skills,
   the design system as a package on a tag and no relative import of it, the
-  paths that check out on Windows),
+  listing's status against the CHANGELOG, paths that check out on Windows),
   the design system in the library and in every built deck, and the empty
   start on a fresh checkout (`tests/empty-start.test.ts`, now for the sample
   deck: its directory, its two previews and `tests/sample-deck.test.ts`).
@@ -81,6 +81,11 @@ Builds on 0.1.1.
   client and the timeline's time sit under their titles), hairlines instead
   of thick edges and shadows, no decorative numbering of problem points, one
   black action, motion from the design system's durations and curves.
+- `docs/marketplace.md`: the **Status** line says which releases are
+  published (issue #7: the tag `v0.1.1` called 0.1.1 unreleased), and
+  `docs/release.md` sets it in the release commit; a test compares it with
+  the CHANGELOG.
+
 ### Removed
 
 - The four-slide starter `2026-10-11-project-proposal` and its preview; the
