@@ -5,7 +5,8 @@ import packageJson from "../package.json";
 
 // The contract of a Marketplace template (LazurioTemplates): license,
 // documents, exact versions, Bun in CI, screens per language, the agents'
-// skills, the design system subtree and paths that check out on Windows.
+// skills, the design system as a package, the listing status and paths that
+// check out on Windows.
 const root = resolve(import.meta.dir, "..", "..", "..");
 const read = (path: string) => readFileSync(join(root, path), "utf8");
 
@@ -91,9 +92,11 @@ describe("template contract", () => {
     }
   });
 
-  test("the design system is a merged release, not a copy", () => {
-    expect(read("design-system/CHANGELOG.md")).toContain("1.0.0");
-    expect(existsSync(join(root, "design-system/content/brand/colors/tokens.json"))).toBe(true);
+  test("the design system is the package at a released tag (tests/design-system.test.ts)", () => {
+    expect((packageJson.dependencies as Record<string, string>)["design-system"]).toBe(
+      "github:LazurioTemplates/design-system#v2.0.0",
+    );
+    expect(existsSync(join(root, "design-system"))).toBe(false);
   });
 
   test("every path checks out on Windows", () => {

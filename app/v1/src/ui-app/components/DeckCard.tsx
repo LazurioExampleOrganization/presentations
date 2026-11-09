@@ -1,7 +1,9 @@
+import { Button } from "design-system/react";
 import { useState } from "react";
 import type { DeckSummary } from "../../model.ts";
 import { slideLabel } from "../format.ts";
 import { useMessages } from "../i18n.ts";
+import { OpenLink } from "./OpenLink.tsx";
 
 export function DeckCard({
   deck,
@@ -13,7 +15,7 @@ export function DeckCard({
   const { language, m } = useMessages();
   const [previewFailed, setPreviewFailed] = useState(false);
   return (
-    <article className="deck-card lz-article-card">
+    <article className="deck-card ds-card">
       <a
         className="deck-preview-link"
         href={deck.deckUrl}
@@ -21,7 +23,7 @@ export function DeckCard({
         rel="noreferrer"
         aria-label={m.openNamed(deck.title)}
       >
-        <span className="sr-only">{m.openNamed(deck.title)}</span>
+        <span className="ds-visually-hidden">{m.openNamed(deck.title)}</span>
         <span className="deck-preview" aria-hidden="true">
           {previewFailed ? (
             <span className="deck-preview-error">{m.previewMissing}</span>
@@ -39,7 +41,7 @@ export function DeckCard({
         </span>
       </a>
 
-      <div className="lz-article-card__body">
+      <div className="deck-card-body">
         <div className="deck-card-top">
           <span className="deck-meta-summary">
             {slideLabel(deck.slideCount, language)}
@@ -53,21 +55,10 @@ export function DeckCard({
         </button>
 
         <div className="deck-card-actions">
-          <a
-            className="deck-action-link lz-arrow-link"
-            href={deck.deckUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {m.open}
-          </a>
-          <button
-            type="button"
-            className="deck-action-link lz-arrow-link"
-            onClick={() => onOpenDetail(deck.slug)}
-          >
+          <OpenLink href={deck.deckUrl}>{m.open}</OpenLink>
+          <Button size="sm" variant="quiet" onClick={() => onOpenDetail(deck.slug)}>
             {m.detail}
-          </button>
+          </Button>
         </div>
       </div>
     </article>

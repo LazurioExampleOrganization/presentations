@@ -1,86 +1,116 @@
-import {
-  type DesignTokens,
-  parseTokens,
-  ROLES,
-  roleColor,
-  tokens,
-} from "../../../../design-system/app/v1/src/tokens.ts";
-
-/** The tokens of the module's design system, as its own `tokens.ts` parses them. */
-export const designSystemTokens: DesignTokens = tokens;
+import { readdirSync, readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import * as tokens from "design-system/tokens";
+import { APP_ROOT } from "../paths.ts";
 
 /**
- * The look of a deck comes from the module's design system, the subtree
- * `design-system/` (a merged release of LazurioTemplates/design-system): its
- * `content/brand/colors/tokens.json`, read through the design system's own
- * `tokens.ts`. Nothing of it is copied here; a newer design system reaches the
- * decks with the next `bun run deck:build`.
+ * The look of a deck comes from the module's design system, the package
+ * `design-system` (LazurioTemplates/design-system at a released tag, or the
+ * Organization's own): colours, fonts and base styles from its `styles.css`,
+ * the type scale, spacing and radii from `design-system/tokens`. Nothing of it
+ * is copied into the repository; `bun run deck:build` puts the package's
+ * stylesheet and fonts into each built deck, so a deck opens offline.
  *
- * A slide is 1920 × 1080 px (`width.slide`), twice a screen of the design
- * system's reading width, so its type and spacing are the design system's
- * scales at `SLIDE_SCALE`.
+ * A slide is 1920 × 1080 px, twice a screen at the design system's sizes, so
+ * the type scale, spacing and radii become `--slide-*` custom properties at
+ * `SLIDE_SCALE`. Colours stay the design system's `--ds-color-*` roles; a
+ * slide's tone is the design system's `data-theme`.
  */
 export const SLIDE_SCALE = 2;
 
-/** The local fonts every deck carries, ahead of the design system's stacks (offline, same on every projector). */
-export const DECK_FONTS = {
-  sans: '"Inter Tight Variable"',
-  mono: '"Geist Mono"',
-} as const;
+/** Type roles a slide uses; each must have a size in px in the design system. */
+export const SLIDE_TYPE_ROLES = [
+  "hero",
+  "display",
+  "title",
+  "lead",
+  "body",
+  "body-sm",
+  "label",
+  "meta",
+  "status",
+] as const;
 
-export function readTokens(raw: unknown): DesignTokens {
-  return parseTokens(raw);
+function px(value: string, what: string): number {
+  const match = /^(\d+(?:\.\d+)?)px$/.exec(value);
+  if (!match?.[1]) throw new Error(`design system ${what} is ${value}; a slide needs a size in px`);
+  return Number(match[1]);
 }
 
-const px = (value: number) => `${value}px`;
+const scaled = (value: string, what: string) => `${px(value, what) * SLIDE_SCALE}px`;
 
-/** CSS custom properties of the deck theme: `--<role>` per theme, the type scale and spacing. */
-export function deckThemeCss(tokens: DesignTokens): string {
-  const width = tokens.width.slide;
-  if (width !== 1920) {
-    throw new Error(`design system width.slide is ${width}; the deck stage is 1920 px wide`);
+/** The slide-scale custom properties: `--slide-type-<role>-*`, `--slide-space-<n>`, `--slide-radius-<n>`. */
+export function slideScaleCss(): string {
+  const lines: string[] = [];
+  for (const role of SLIDE_TYPE_ROLES) {
+    const spec = tokens.type[role];
+    lines.push(
+      `  --slide-type-${role}-font: var(--ds-type-${role}-font);`,
+      `  --slide-type-${role}-size: ${scaled(spec.size, `type.${role}.size`)};`,
+      `  --slide-type-${role}-leading: ${spec.leading};`,
+      `  --slide-type-${role}-weight: ${spec.weight};`,
+      `  --slide-type-${role}-tracking: ${spec.tracking};`,
+    );
   }
-  const roles = (theme: "light" | "dark") =>
-    ROLES.map((role) => `  --${role}: ${roleColor(tokens, theme, role)};`).join("\n");
-  const scale = Object.entries(tokens.typography.scale)
-    .map(
-      ([style, spec]) =>
-        `  --type-${style}-size: ${px(spec.size * SLIDE_SCALE)};\n` +
-        `  --type-${style}-line: ${px(spec.lineHeight * SLIDE_SCALE)};\n` +
-        `  --type-${style}-weight: ${spec.weight};`,
-    )
-    .join("\n");
-  const space = Object.entries(tokens.space)
-    .map(([key, value]) => `  --space-${key}: ${px(value * SLIDE_SCALE)};`)
-    .join("\n");
-  const radius = Object.entries(tokens.radius)
-    .map(([key, value]) => `  --radius-${key}: ${px(value * SLIDE_SCALE)};`)
-    .join("\n");
-  const stroke = Object.entries(tokens.stroke)
-    .map(([key, value]) => `  --stroke-${key}: ${px(value * SLIDE_SCALE)};`)
-    .join("\n");
-  const motion = Object.entries(tokens.motion)
-    .map(([key, value]) => `  --motion-${key}: ${value}ms;`)
-    .join("\n");
+  for (const [step, value] of Object.entries(tokens.space)) {
+    lines.push(`  --slide-space-${step}: ${scaled(value, `space.${step}`)};`);
+  }
+  for (const [step, value] of Object.entries(tokens.radius)) {
+    lines.push(
+      `  --slide-radius-${step}: ${step === "pill" ? value : scaled(value, `radius.${step}`)};`,
+    );
+  }
   return [
-    `/* Generated by bun run deck:build from the design system "${tokens.name}"`,
-    "   (design-system/content/brand/colors/tokens.json). Do not edit. */",
-    ":root,",
-    ".tone-light {",
-    roles("light"),
-    "}",
-    ".tone-dark {",
-    roles("dark"),
-    "}",
+    "/* Generated by bun run deck:build from design-system/tokens at slide scale. Do not edit. */",
     ":root {",
-    `  --font-sans: ${DECK_FONTS.sans}, ${tokens.typography.families.sans};`,
-    `  --font-mono: ${DECK_FONTS.mono}, ${tokens.typography.families.mono};`,
-    scale,
-    space,
-    radius,
-    stroke,
-    motion,
+    ...lines,
     "}",
     "",
   ].join("\n");
+}
+
+/** The package's files: `styles.css` and the directory of its fonts. */
+function packageFiles() {
+  const styles = Bun.resolveSync("design-system/styles.css", APP_ROOT);
+  const fonts = join(dirname(Bun.resolveSync("design-system/fonts.css", APP_ROOT)), "fonts");
+  return { styles, fonts };
+}
+
+const IMPORT = /^@import\s+"(\.\/[A-Za-z0-9/_-]+\.css)";\s*$/;
+
+/**
+ * The design system's `styles.css` as one stylesheet: its `@import`s of the
+ * package's own files, in order. Its fonts stay `./fonts/<file>`, which is
+ * where `designSystemFonts()` puts them beside the deck's stylesheet.
+ */
+export function designSystemCss(): string {
+  const { styles } = packageFiles();
+  const parts: string[] = ["/* design-system/styles.css, inlined by bun run deck:build. */"];
+  for (const line of readFileSync(styles, "utf8").split("\n")) {
+    const trimmed = line.trim();
+    if (trimmed === "" || trimmed.startsWith("/*") || trimmed.startsWith("*")) continue;
+    const match = IMPORT.exec(trimmed);
+    if (!match?.[1]) {
+      throw new Error(`design-system/styles.css: unexpected line "${trimmed}"; update theme.ts`);
+    }
+    const css = readFileSync(join(dirname(styles), match[1]), "utf8");
+    if (/@import\b/.test(css)) throw new Error(`design-system ${match[1]} imports another file`);
+    parts.push(`/* ${match[1]} */`, css.trim(), "");
+  }
+  return parts.join("\n");
+}
+
+/** The fonts the design system's stylesheet loads, with their licenses, by file name. */
+export function designSystemFonts(): Map<string, Uint8Array> {
+  const { fonts } = packageFiles();
+  const files = new Map<string, Uint8Array>();
+  for (const name of readdirSync(fonts).sort()) {
+    if (/\.(woff2?|txt)$/.test(name)) {
+      files.set(name, new Uint8Array(readFileSync(join(fonts, name))));
+    }
+  }
+  if (![...files.keys()].some((name) => name.endsWith(".woff2"))) {
+    throw new Error("design-system ships no fonts in its fonts/ directory");
+  }
+  return files;
 }

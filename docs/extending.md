@@ -18,9 +18,10 @@ Bun 1.4.4, TypeScript 7.0.2, Biome 2.6.4, Vite 8.3.5 and React 19.3.1.
   `deck-add-slide` and `deck-personal-version`; the format is in
   [slide-types.md](slide-types.md). Each deck needs its first-slide previews
   in `app/v1/public/previews/`.
-- **The look of decks.** Change the design system (`design-system/`, by
-  merging a newer release, see below) and run `bun run deck:build`. The
-  layout of the slide types is `app/v1/src/deck/deck.css`.
+- **The look.** Change the design system (a newer release, a new pin, see
+  [The design system](#the-design-system)) and run `bun run deck:build`. The
+  layout of the slide types is `app/v1/src/deck/deck.css`, the library's
+  `app/v1/src/ui-app/index.css`; both name only design system tokens.
 - **Words of the App.** `app/v1/src/ui-app/i18n.ts` (the library) and
   `app/v1/src/deck/messages.ts` (deck controls), always in both languages;
   a test fails when one language misses a text.
@@ -109,21 +110,28 @@ request; declining it keeps your current version.
 ### From 0.1.x to 0.2.0
 
 Release 0.2.0 adds decks built from source, the eleven slide types, video,
-personal versions, Czech and English and the design system subtree. What
-the merge does and what to decide:
+personal versions, Czech and English, and moves the look onto the design
+system package. What the merge does and what to decide:
 
 1. **Take 0.1.1 first** if you have not: it brings the built version from
    `main` (`start_script`, `build_output`), which 0.2.0 keeps.
-2. **Merge `v0.2.0`.** It adds `design-system/`, `.agents/skills/`,
+2. **Merge `v0.2.0`.** It adds the dependency `design-system`
+   (`github:LazurioTemplates/design-system#v2.0.0`), `.agents/skills/`,
    `.claude/skills/`, `app/v1/src/deck/`, the sample deck
    `data/v1/decks/2026-11-02-example-office-coffee/` and its previews, and
-   deletes the 0.1 starter `2026-10-11-project-proposal` with its preview.
+   deletes the 0.1 starter `2026-10-11-project-proposal` with its preview
+   and the Lazurio snapshot `app/v1/public/lazurio/` with its
+   `vendor.lock.json` (the library now imports `design-system/styles.css`).
    If you changed the starter and want to keep it, restore it in the merge
    (`git checkout HEAD -- <paths>`); it keeps working as a hand-written
-   deck.
+   deck. Run `bun install` after the merge: `bun.lock` gains the package.
 3. **Conflicts.** `app/v1/package.json`: keep your `lazurio.runtime` `id`,
-   `company` and `module`; take the rest. `app/v1/tests/template-seed.test.ts`
-   (the 0.1 starter's checks) is deleted in 0.2.0 together with the starter:
+   `company` and `module`; take the rest, and keep your own design system's
+   dependency line if your module already has one. If you changed the
+   library's look in `app/v1/src/ui-app/index.css` against the snapshot's
+   `--lz-*` variables, move those changes to `--ds-*` tokens.
+   `app/v1/tests/template-seed.test.ts` (the 0.1 starter's checks) is
+   deleted in 0.2.0 together with the starter:
    when Git reports it as modified on your side, delete it. Files of your own
    decks never conflict.
 4. **The language.** Set `app/v1/src/instance.ts` `language` to the
@@ -145,22 +153,32 @@ the merge does and what to decide:
 7. `bun run deck:build`, `bun run check`, a look at the library and a deck
    in both languages, pull request.
 
-## Taking a newer design system
+## The design system
 
-`design-system/` is a subtree merge of `LazurioTemplates/design-system`.
-When this template ships a newer design system, it reaches you with the
-template's release. To take a design system release yourself (for example
-v2.0.0 before this template does):
+The library and the decks wear the package `design-system`, a dependency of
+the App on a released tag ([design](design-system.md)). Never copy its files
+into the module or import it by a relative path.
 
-```sh
-git fetch https://github.com/LazurioTemplates/design-system.git "refs/tags/v<version>"
-git merge -X subtree=design-system/ --no-ff -m "Design system: take release v<version>" 'FETCH_HEAD^{commit}'
-cd app/v1 && bun run deck:build && bun run check
-```
+- **A newer release** of `LazurioTemplates/design-system` (or of the
+  Organization's own): change the tag in `app/v1/package.json`, then
+  `bun install`, `bun run deck:build` and `bun run check`; read the release's
+  CHANGELOG for what the module must change and look at the library and
+  every deck in both languages before the pull request.
+- **The Organization's own design system**, once it has adopted the template
+  and released it: change the line to
+  `"design-system": "git+ssh://git@github.com/<Organization>/design-system.git#v<version>"`.
+  The imports stay the same, because both packages are named
+  `design-system`. A new brand is a new release of that design system and a
+  new pin here; this module changes nothing else.
+- **Known limit:** Bun installs a private repository only over SSH, so the
+  module's GitHub Actions cannot install the Organization's private design
+  system without a read key for it. Until Lazurio/LazurioPlatform#915
+  decides how, the check runs on the Environment (`bun run check`) and the
+  pull request says so.
 
-`deck:build` refuses a design system whose tokens no longer parse or whose
-`width.slide` is not 1920; then adapt `app/v1/src/deck/theme.ts` in the same
-pull request. Look at every deck in the browser before the pull request.
+`deck:build` refuses a design system whose type roles, spacing or radii are
+not in px, or whose stylesheet imports something other than its own files;
+then adapt `app/v1/src/deck/theme.ts` in the same pull request.
 
 ## Releasing the template
 

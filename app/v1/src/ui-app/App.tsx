@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, Button, EmptyState, TextArea } from "design-system/react";
+import { useCallback, useEffect, useId, useRef, useState } from "react";
 import type { DeckDetail, DeckSummary, HealthResponse } from "../model.ts";
 import { api } from "./api.ts";
 import { DeckCard } from "./components/DeckCard.tsx";
@@ -12,6 +13,7 @@ type LoadState = "loading" | "ready" | "error";
 
 export default function App() {
   const { language, m } = useMessages();
+  const briefId = useId();
   const [context, setContext] = useState<HealthResponse | null>(null);
   const [showBrief, setShowBrief] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -81,49 +83,42 @@ export default function App() {
           <span>
             {decks.length} {plural(decks.length, m.presentations, language)}
           </span>
-          <button
-            type="button"
-            className="lz-button lz-button--secondary lz-button--small"
-            onClick={() => void loadDecks()}
-          >
+          <Button size="sm" onClick={() => void loadDecks()}>
             {m.refresh}
-          </button>
+          </Button>
         </div>
       </header>
 
       <main className="app-main">
         <div className="page-head">
-          <h1 className="lz-type-display">{m.heading}</h1>
-          <p className="page-lede">{m.lede}</p>
+          <h1 className="ds-type-display">{m.heading}</h1>
+          <p className="ds-type-lead">{m.lede}</p>
         </div>
 
         <div className="authoring">
-          <button
-            type="button"
-            className="lz-button lz-button--primary"
+          <Button
+            variant="primary"
             disabled={!context}
             aria-expanded={showBrief}
             onClick={() => setShowBrief(!showBrief)}
           >
             {m.create}
-          </button>
+          </Button>
           <p className="hint">{m.createHint}</p>
         </div>
         {showBrief ? (
-          <section className="brief-panel" aria-label={m.briefHeading}>
-            <h2>{m.briefHeading}</h2>
+          <section className="brief-panel ds-card" aria-label={m.briefHeading}>
+            <h2 className="ds-type-title">{m.briefHeading}</h2>
             <p>{m.briefIntro}</p>
-            <div className="lz-field">
-              <textarea
-                aria-label={m.briefLabel}
-                rows={6}
-                readOnly
-                value={m.brief(moduleName(context))}
-              />
-            </div>
-            <button
-              type="button"
-              className="lz-button lz-button--secondary"
+            <TextArea
+              id={briefId}
+              label={m.briefLabel}
+              locale={language}
+              rows={6}
+              readOnly
+              value={m.brief(moduleName(context))}
+            />
+            <Button
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(m.brief(moduleName(context)));
@@ -134,20 +129,26 @@ export default function App() {
               }}
             >
               {copied ? m.copied : m.copyBrief}
-            </button>
+            </Button>
             <p className="hint" role="status">
               {copied ? m.copiedHint : m.copyHint}
             </p>
           </section>
         ) : null}
 
-        {state === "loading" ? <div className="state">{m.loading}</div> : null}
-        {state === "error" ? (
-          <div className="state state-error">
-            {m.loadFailed} {errorMsg}
-          </div>
+        {state === "loading" ? (
+          <p className="state ds-type-meta" role="status">
+            {m.loading}
+          </p>
         ) : null}
-        {state === "ready" && decks.length === 0 ? <div className="state">{m.empty}</div> : null}
+        {state === "error" ? (
+          <Alert tone="danger" title={m.loadFailed} locale={language} live="assertive">
+            {errorMsg}
+          </Alert>
+        ) : null}
+        {state === "ready" && decks.length === 0 ? (
+          <EmptyState title={m.empty} illustration="empty" />
+        ) : null}
         {state === "ready" && decks.length > 0 ? (
           <div className="deck-grid">
             {decks.map((deck) => (
@@ -156,7 +157,7 @@ export default function App() {
           </div>
         ) : null}
 
-        <footer className="app-footer">{m.footer}</footer>
+        <footer className="app-footer ds-type-meta">{m.footer}</footer>
       </main>
 
       {selectedSlug ? (

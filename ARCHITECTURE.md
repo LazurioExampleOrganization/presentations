@@ -16,15 +16,16 @@ data/v1/decks/<YYYY-MM-DD>-<slug>/
   index.html         built: the primary language
   index.<lang>.html  built: each further language
   deck.meta.json     built: metadata per language, the slide outline
-  assets/            built: deck.css (design system theme + layout),
-                     deck.js (runtime), the local fonts and their licenses
+  assets/            built: deck.css (the design system's styles, the
+                     slide scale, the layout), deck.js (runtime), fonts/
+                     (the design system's fonts and their licenses)
 ```
 
 `app/v1/src/deck/` holds the build: `source.ts` (the shape of the source
 and its validation, errors by field path), `slides.ts` (one renderer per
 slide type, every text escaped), `render.ts` (the page per language and
-`deck.meta.json`), `theme.ts` (the design system's tokens as CSS custom
-properties at slide scale), `build.ts` (files, drift and writing) and
+`deck.meta.json`), `theme.ts` (the design system package's stylesheet and
+fonts, and its tokens as `--slide-*` custom properties at slide scale), `build.ts` (files, drift and writing) and
 `runtime.ts` with `link.ts` (the browser script, bundled by `Bun.build`).
 `src/cli/deck-build.ts` is `bun run deck:build` and `deck:check`.
 
@@ -53,9 +54,9 @@ library stay usable.
 
 Adoption uses the standard scaffold for the repository, slot and lease, and
 a merge of the release that keeps it an ancestor; later releases are merges
-of their tags. No grants or credentials are copied. The design system is a
-subtree merge of a release of `LazurioTemplates/design-system`, taken the
-same way.
+of their tags. No grants or credentials are copied. The design system is
+the package `design-system` at a released tag, a dependency of the App;
+a newer one is a new pin.
 
 Local preview is not proof of a released installation in another
 Organization; that gate stays with the Marketplace pilot.

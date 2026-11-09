@@ -92,8 +92,8 @@ ancestor so later releases merge normally. Resolve overlaps:
 - `app/v1/package.json`: keep the scaffold's `lazurio.runtime.id`, `company`
   and `module`; take the template's dependencies, scripts, `listeners`,
   `preparation` and the rest of `lazurio`.
-- Take the template's app source, tests, design snapshot, design system
-  subtree (`design-system/`), skills (`.agents/skills/`, `.claude/skills/`),
+- Take the template's app source, tests, skills (`.agents/skills/`,
+  `.claude/skills/`),
   sample deck and previews. Remove the scaffold greeting and its test; the
   template serves through one Bun server and uses Vite only for the build.
 - Language: set `language` in `app/v1/src/instance.ts` to the confirmed
@@ -105,10 +105,15 @@ ancestor so later releases merge normally. Resolve overlaps:
   `app/v1/tests/sample-deck.test.ts`. Nothing else names the sample, and
   `data/v1/decks/.gitkeep` keeps the empty library in Git;
   `tests/empty-start.test.ts` checks exactly this path.
-- The design system: decks wear the brand of `design-system/`, the invented
-  Example until the Organization makes it its own. For its own brand,
-  follow `design-system/docs/adoption.md` step 7 inside `design-system/` in
-  a later pull request, then `bun run deck:build`.
+- The design system: the App depends on the package `design-system`
+  (`github:LazurioTemplates/design-system#v2.0.0`, the invented brand
+  Example). When the Organization has adopted and released its own design
+  system, change that one line in `app/v1/package.json` to
+  `git+ssh://git@github.com/<Organization>/design-system.git#v<version>`,
+  then `bun install`, `bun run deck:build` and `bun run check`, in this pull
+  request or a later one ([design](design-system.md)). Known limit: the
+  module's CI cannot install a private design system yet
+  (Lazurio/LazurioPlatform#915); the check runs on the Environment.
 - Record the adopted release (tag and commit) in the module README.
 
 Then in `app/v1`: `bun install --frozen-lockfile` and `bun run check` (it

@@ -44,8 +44,8 @@ describe("deck:build", () => {
     ]);
     const cs = text(files, "index.html");
     const en = text(files, "index.en.html");
-    expect(cs).toContain('<html lang="cs">');
-    expect(en).toContain('<html lang="en">');
+    expect(cs).toContain('<html lang="cs" data-theme="light">');
+    expect(en).toContain('<html lang="en" data-theme="light">');
     expect(cs).toContain("<title>Testovací deck</title>");
     expect(en).toContain("<title>Test deck</title>");
     expect(en).not.toContain("Předěl");

@@ -1,10 +1,9 @@
+import { readLazurioLocale, resolveLocale } from "design-system";
 import { createContext, useContext } from "react";
 import { instance } from "../instance.ts";
 
 export const UI_LANGUAGES = ["cs", "en"] as const;
 export type UiLanguage = (typeof UI_LANGUAGES)[number];
-
-const SHELL_SCHEMA = "lazurio.shell.v1";
 
 export function parseLanguage(value: unknown): UiLanguage | null {
   return (UI_LANGUAGES as readonly unknown[]).includes(value) ? (value as UiLanguage) : null;
@@ -12,27 +11,18 @@ export function parseLanguage(value: unknown): UiLanguage | null {
 
 /**
  * The language of the library, never mixed on one screen: `?lang=cs|en` in
- * the address (links, screenshots), else the `locale` of Lazurio's shell
- * document where the App's origin answers `/.lazurio/shell.json`, else the
- * Organization's default in `src/instance.ts`.
+ * the address (links, screenshots), else the `locale` Lazurio gives where the
+ * App's origin answers `/.lazurio/shell.json` (`readLazurioLocale` of the
+ * design system), else the Organization's default in `src/instance.ts`.
  */
 export async function resolveLanguage(
   search: string,
-  load: (path: string) => Promise<Response>,
+  fetcher: typeof fetch = fetch,
   fallback: UiLanguage = instance.language,
 ): Promise<UiLanguage> {
-  const fromAddress = parseLanguage(new URLSearchParams(search).get("lang"));
-  if (fromAddress) return fromAddress;
-  try {
-    const response = await load("/.lazurio/shell.json");
-    if (response.ok && (response.headers.get("content-type") ?? "").includes("json")) {
-      const shell = (await response.json()) as { schema?: unknown; locale?: unknown } | null;
-      if (shell?.schema === SHELL_SCHEMA) return parseLanguage(shell.locale) ?? fallback;
-    }
-  } catch {
-    // No shell document: the App runs outside Lazurio.
-  }
-  return fallback;
+  const explicit = parseLanguage(new URLSearchParams(search).get("lang"));
+  if (explicit) return explicit;
+  return resolveLocale({ lazurio: (await readLazurioLocale(fetcher)) ?? fallback });
 }
 
 type Plural = { one: string; few: string; many: string };

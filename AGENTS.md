@@ -47,10 +47,14 @@ Keep both skill folders identical; a test checks it.
   `app/v1/src/instance.ts`. Every text is in `app/v1/src/ui-app/i18n.ts`
   (library) and `app/v1/src/deck/messages.ts` (deck controls), in both
   languages; never mix languages on one screen.
-- The look of decks comes from `design-system/` (a subtree merge of a
-  release of `LazurioTemplates/design-system`; never edit it here, take a
-  newer release by merging its tag). The library keeps the frozen Lazurio
-  snapshot in `app/v1/public/lazurio/`; never edit it either. See
+- The look of the library and the decks comes from the package
+  `design-system` at a released tag (`app/v1/package.json`): the library
+  imports `design-system/styles.css` and its React components, the deck
+  build puts its stylesheet and fonts into each deck and scales
+  `design-system/tokens` to the slide. Never copy its files or import it by
+  a relative path; a newer design system is a new pin. Use only `--ds-*`
+  roles and the `--slide-*` scale, and keep its rules (no uppercase, no
+  eyebrow labels, hairlines, one black action). See
   [docs/design-system.md](docs/design-system.md).
 
 ## Stack

@@ -29,9 +29,10 @@ It is a free template of the Lazurio Marketplace, released under the
   stored; the library's detail builds the link.
 - **Czech and English.** The library follows the language of your Lazurio;
   a deck can carry both languages, each with its own page and preview.
-- **Your design system.** Decks take colours, type and spacing from the
-  module's design system (`design-system/`, a merged release of
-  `LazurioTemplates/design-system`); the library keeps the Lazurio look.
+- **Your design system.** The library and the decks wear the design system
+  package `design-system` (`LazurioTemplates/design-system` v2.0.0, or your
+  Organization's own at a released tag): its styles, components, fonts and
+  tokens ([design](docs/design-system.md)).
 - **Skills for agents** in `.agents/skills/` and `.claude/skills/`:
   prepare a deck from sources (`deck-from-sources`), a personal version for
   a prospect (`deck-personal-version`), add a slide of a given type

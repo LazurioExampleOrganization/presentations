@@ -4,19 +4,10 @@ import { basename, dirname, join, resolve } from "node:path";
 import { APP_ROOT, DECKS_ROOT, isValidDeckSlug } from "../paths.ts";
 import { deckMeta, pageFile, renderDeckPage } from "./render.ts";
 import { type DeckSource, parseDeckSource } from "./source.ts";
-import { deckThemeCss, designSystemTokens } from "./theme.ts";
+import { designSystemCss, designSystemFonts, slideScaleCss } from "./theme.ts";
 
 export const SOURCE_FILE = "deck.source.json";
 
-/** The local fonts a deck carries (OFL, from the App's vendored files), with their licenses. */
-const FONT_FILES = [
-  "fonts/inter-tight-latin-wght-normal.woff2",
-  "fonts/inter-tight-latin-ext-wght-normal.woff2",
-  "fonts/geist-mono-latin-400-normal.woff2",
-  "LICENSE-inter-tight.txt",
-  "LICENSE-geist-mono.txt",
-] as const;
-const FONT_SOURCE = join(APP_ROOT, "public", "lazurio");
 const STYLESHEET = join(APP_ROOT, "src", "deck", "deck.css");
 const RUNTIME = join(APP_ROOT, "src", "deck", "runtime.ts");
 
@@ -70,14 +61,14 @@ export async function buildDeck(deckDir: string): Promise<Map<string, string | U
     files.set(pageFile(source, language), renderDeckPage(source, slug, language));
   }
   files.set("deck.meta.json", `${JSON.stringify(deckMeta(source), null, 2)}\n`);
+  // One stylesheet: the design system's styles, the slide scale from its
+  // tokens, then the layout of the slide types. Its fonts sit in assets/fonts/.
   files.set(
     "assets/deck.css",
-    `${deckThemeCss(designSystemTokens)}\n${await readFile(STYLESHEET, "utf8")}`,
+    [designSystemCss(), slideScaleCss(), await readFile(STYLESHEET, "utf8")].join("\n"),
   );
   files.set("assets/deck.js", await bundleRuntime());
-  for (const font of FONT_FILES) {
-    files.set(`assets/${font}`, new Uint8Array(await readFile(join(FONT_SOURCE, font))));
-  }
+  for (const [name, content] of designSystemFonts()) files.set(`assets/fonts/${name}`, content);
   return files;
 }
 

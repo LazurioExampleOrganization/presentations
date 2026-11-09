@@ -1,7 +1,9 @@
+import { Alert, Button, TextField } from "design-system/react";
 import { type ReactNode, useEffect, useId, useState } from "react";
 import type { DeckDetail } from "../../model.ts";
 import { formatBytes, metadataLabel, personalLink, slideLabel } from "../format.ts";
 import { useMessages } from "../i18n.ts";
+import { OpenLink } from "./OpenLink.tsx";
 
 function Row({ label, value }: { label: string; value: string | null }) {
   if (!value) return null;
@@ -51,7 +53,7 @@ function PersonalSection({ deckUrl, supported }: { deckUrl: string; supported: b
 
 /** A link for one prospect: the name and Organization live in the link only. */
 function PersonalVersion({ deckUrl }: { deckUrl: string }) {
-  const { m } = useMessages();
+  const { language, m } = useMessages();
   const [name, setName] = useState("");
   const [organization, setOrganization] = useState("");
   const [copied, setCopied] = useState(false);
@@ -63,45 +65,38 @@ function PersonalVersion({ deckUrl }: { deckUrl: string }) {
   return (
     <>
       <div className="personal-fields">
-        <div className="lz-field">
-          <label htmlFor={nameId}>{m.personalName}</label>
-          <input
-            id={nameId}
-            type="text"
-            maxLength={80}
-            autoComplete="off"
-            value={name}
-            onChange={(event) => {
-              setName(event.target.value);
-              setCopied(false);
-            }}
-          />
-        </div>
-        <div className="lz-field">
-          <label htmlFor={organizationId}>{m.personalOrganization}</label>
-          <input
-            id={organizationId}
-            type="text"
-            maxLength={80}
-            autoComplete="off"
-            value={organization}
-            onChange={(event) => {
-              setOrganization(event.target.value);
-              setCopied(false);
-            }}
-          />
-        </div>
+        <TextField
+          id={nameId}
+          label={m.personalName}
+          locale={language}
+          maxLength={80}
+          autoComplete="off"
+          value={name}
+          onChange={(event) => {
+            setName(event.target.value);
+            setCopied(false);
+          }}
+        />
+        <TextField
+          id={organizationId}
+          label={m.personalOrganization}
+          locale={language}
+          maxLength={80}
+          autoComplete="off"
+          value={organization}
+          onChange={(event) => {
+            setOrganization(event.target.value);
+            setCopied(false);
+          }}
+        />
       </div>
       {ready ? (
         <>
-          <div className="lz-field">
-            <label htmlFor={linkId}>{m.personalLink}</label>
-            <input id={linkId} type="text" readOnly value={link} />
-          </div>
+          <TextField id={linkId} label={m.personalLink} locale={language} readOnly value={link} />
           <div className="personal-actions">
-            <button
-              type="button"
-              className="lz-button lz-button--secondary lz-button--small"
+            <Button
+              size="sm"
+              icon="copy"
               onClick={async () => {
                 try {
                   await navigator.clipboard.writeText(link);
@@ -112,15 +107,10 @@ function PersonalVersion({ deckUrl }: { deckUrl: string }) {
               }}
             >
               {copied ? m.copied : m.personalCopy}
-            </button>
-            <a
-              className="deck-action-link lz-arrow-link"
-              href={link}
-              target="_blank"
-              rel="noreferrer"
-            >
+            </Button>
+            <OpenLink href={link} variant="quiet">
               {m.personalOpen}
-            </a>
+            </OpenLink>
           </div>
         </>
       ) : null}
@@ -164,32 +154,32 @@ export function DeckDrawer({
       <aside className="drawer-panel" aria-label={m.detailLabel}>
         <div className="drawer-head">
           <div>
-            <h2 className="drawer-title">{detail?.title ?? slug}</h2>
+            <h2 className="drawer-title ds-type-title">{detail?.title ?? slug}</h2>
             <p className="hint">{slug}</p>
           </div>
-          <button
-            type="button"
-            className="lz-button lz-button--quiet lz-button--small drawer-close"
+          <Button
+            variant="quiet"
+            size="sm"
+            iconOnly
+            icon="xmark"
+            label={m.close}
+            className="drawer-close"
             onClick={onClose}
-            aria-label={m.close}
-          >
-            ×
-          </button>
+          />
         </div>
 
         <div className="drawer-actions">
-          <a
-            className="lz-button lz-button--primary"
-            href={presentUrl}
-            target="_blank"
-            rel="noreferrer"
-          >
+          <OpenLink href={presentUrl} variant="primary" size="md">
             {m.present}
-          </a>
+          </OpenLink>
         </div>
 
         {loading ? <p className="hint">{m.loadingDetail}</p> : null}
-        {error ? <p className="hint state-error">{error}</p> : null}
+        {error ? (
+          <Alert tone="danger" locale={language} live="assertive">
+            {error}
+          </Alert>
+        ) : null}
 
         {detail ? (
           <>

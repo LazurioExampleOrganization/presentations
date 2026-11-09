@@ -78,8 +78,8 @@ function metricHtml(metric: Metric, ctx: RenderContext): string {
 
 const renderers: { [type in SlideType]: (slide: never, ctx: RenderContext) => string } = {
   title: (slide: TitleSlide, ctx) =>
+    opt(slide.eyebrow, ctx, (x) => `<p class="running-head">${x}</p>`) +
     '<div class="title-copy">' +
-    opt(slide.eyebrow, ctx, (x) => `<p class="eyebrow">${x}</p>`) +
     `<h1 class="display">${t(slide.title, ctx)}</h1>` +
     opt(slide.subtitle, ctx, (x) => `<p class="lede">${x}</p>`) +
     personalLine(ctx) +
@@ -89,7 +89,7 @@ const renderers: { [type in SlideType]: (slide: never, ctx: RenderContext) => st
       ? `<img class="title-image" src="./${attr(slide.image.src)}" alt="${attr(textIn(slide.image.alt, ctx.language))}">`
       : ""),
   section: (slide: SectionSlide, ctx) =>
-    opt(slide.label, ctx, (x) => `<p class="section-label">${x}</p>`) +
+    opt(slide.label, ctx, (x) => `<p class="running-head">${x}</p>`) +
     `<h2 class="section-title">${t(slide.title, ctx)}</h2>` +
     opt(slide.lede, ctx, (x) => `<p class="lede">${x}</p>`),
   problem: (slide: ProblemSlide, ctx) =>
@@ -124,8 +124,8 @@ const renderers: { [type in SlideType]: (slide: never, ctx: RenderContext) => st
     "</div>",
   case: (slide: CaseSlide, ctx) =>
     '<div class="case-copy">' +
-    `<p class="eyebrow">${t(slide.client, ctx)}</p>` +
     `<h2>${t(slide.title, ctx)}</h2>` +
+    `<p class="case-client">${t(slide.client, ctx)}</p>` +
     opt(slide.context, ctx, (x) => `<p class="lede">${x}</p>`) +
     '<div class="case-story">' +
     `<div><h3>${escapeHtml(ctx.messages.challenge)}</h3><p>${t(slide.challenge, ctx)}</p></div>` +
@@ -144,8 +144,8 @@ const renderers: { [type in SlideType]: (slide: never, ctx: RenderContext) => st
         (step, index) =>
           `<li style="--step: ${index}">` +
           '<span class="step-dot" aria-hidden="true"></span>' +
-          opt(step.when, ctx, (x) => `<p class="step-when">${x}</p>`) +
           `<h3>${t(step.title, ctx)}</h3>` +
+          opt(step.when, ctx, (x) => `<p class="step-when">${x}</p>`) +
           opt(step.text, ctx, (x) => `<p>${x}</p>`) +
           "</li>",
       )
@@ -201,7 +201,7 @@ const renderers: { [type in SlideType]: (slide: never, ctx: RenderContext) => st
     );
   },
   appendix: (slide: AppendixSlide, ctx) =>
-    `<p class="eyebrow">${escapeHtml(ctx.messages.appendix)}</p>` +
+    `<p class="running-head">${escapeHtml(ctx.messages.appendix)}</p>` +
     `<h2>${t(slide.title, ctx)}</h2>` +
     opt(slide.lede, ctx, (x) => `<p class="lede">${x}</p>`) +
     '<div class="appendix-body">' +
@@ -269,7 +269,7 @@ export function renderSlide(slide: Slide, index: number, ctx: RenderContext): st
   const tone = slide.tone ?? DEFAULT_TONE[slide.type];
   const render = renderers[slide.type] as (slide: Slide, ctx: RenderContext) => string;
   return (
-    `<section class="slide slide--${slide.type} tone-${tone}" data-type="${slide.type}" data-index="${index}" ` +
+    `<section class="slide slide--${slide.type}" data-theme="${tone}" data-type="${slide.type}" data-index="${index}" ` +
     `data-title="${attr(slideTitle(slide, ctx.language))}" aria-label="${attr(slideTitle(slide, ctx.language))}">` +
     `<div class="slide-inner">${render(slide, ctx)}</div>` +
     (slide.notes ? `<aside class="notes" hidden>${t(slide.notes, ctx)}</aside>` : "") +

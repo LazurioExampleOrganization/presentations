@@ -1,47 +1,18 @@
-/* The layout of every built deck. Values come from the theme above it
-   (generated from the design system); this file names roles and scales only. */
+/* The layout of every built deck, after the design system's styles.css.
+   Colours are the design system's --ds-color-* roles (a slide's tone is its
+   data-theme), sizes the --slide-* scale generated from design-system/tokens,
+   the deck's own controls the design system's buttons. No literal colour,
+   size or duration on a slide. The design system's rules hold here too: no
+   uppercase, no eyebrow labels above headings, hairlines instead of shadows,
+   one black action. */
 
-@font-face {
-  font-family: "Inter Tight Variable";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url("./fonts/inter-tight-latin-ext-wght-normal.woff2") format("woff2-variations");
-  unicode-range:
-    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308,
-    U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113,
-    U+2C60-2C7F, U+A720-A7FF;
-}
-@font-face {
-  font-family: "Inter Tight Variable";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 100 900;
-  src: url("./fonts/inter-tight-latin-wght-normal.woff2") format("woff2-variations");
-  unicode-range:
-    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304,
-    U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-@font-face {
-  font-family: "Geist Mono";
-  font-style: normal;
-  font-display: swap;
-  font-weight: 400;
-  src: url("./fonts/geist-mono-latin-400-normal.woff2") format("woff2");
-}
-
-* {
-  box-sizing: border-box;
-}
 html,
 body {
-  margin: 0;
   height: 100%;
   overflow: hidden;
-  background: var(--surface-sunken);
-  color: var(--text);
-  font-family: var(--font-sans);
-  -webkit-font-smoothing: antialiased;
+}
+body {
+  background: var(--ds-color-surface-muted);
 }
 h1,
 h2,
@@ -88,9 +59,10 @@ blockquote {
   inset: 0;
   display: flex;
   flex-direction: column;
-  padding: var(--space-16);
-  background: var(--surface);
-  color: var(--text);
+  padding: var(--slide-space-64);
+  background: var(--ds-color-bg);
+  color: var(--ds-color-ink);
+  font-family: var(--slide-type-body-font);
   opacity: 0;
   visibility: hidden;
 }
@@ -103,111 +75,114 @@ body:not(.is-ready) .slide:first-child,
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--slide-space-32);
   min-height: 0;
 }
 
-/* Type: the design system's scale at slide size. Two weights, sentence case. */
+/* Type: the design system's roles at slide size. Two weights, sentence case. */
 h1,
 .display {
-  font-size: var(--type-display-size);
-  line-height: var(--type-display-line);
-  font-weight: var(--type-display-weight);
-  letter-spacing: -0.02em;
+  font-family: var(--slide-type-hero-font);
+  font-size: var(--slide-type-hero-size);
+  line-height: var(--slide-type-hero-leading);
+  font-weight: var(--slide-type-hero-weight);
+  letter-spacing: var(--slide-type-hero-tracking);
   max-width: 22ch;
   text-wrap: balance;
 }
 h2 {
-  font-size: var(--type-h1-size);
-  line-height: var(--type-h1-line);
-  font-weight: var(--type-h1-weight);
-  letter-spacing: -0.015em;
+  font-family: var(--slide-type-display-font);
+  font-size: var(--slide-type-display-size);
+  line-height: var(--slide-type-display-leading);
+  font-weight: var(--slide-type-display-weight);
+  letter-spacing: var(--slide-type-display-tracking);
   max-width: 28ch;
   text-wrap: balance;
 }
 h3 {
-  font-size: var(--type-h3-size);
-  line-height: var(--type-h3-line);
-  font-weight: var(--type-h3-weight);
+  font-family: var(--slide-type-title-font);
+  font-size: var(--slide-type-title-size);
+  line-height: var(--slide-type-title-leading);
+  font-weight: var(--slide-type-title-weight);
+  letter-spacing: var(--slide-type-title-tracking);
 }
 p,
 li,
 dd,
 td,
 th {
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
-  font-weight: var(--type-body-weight);
+  font-size: var(--slide-type-body-size);
+  line-height: var(--slide-type-body-leading);
+  font-weight: var(--slide-type-body-weight);
+  letter-spacing: var(--slide-type-body-tracking);
 }
 .lede {
-  font-size: var(--type-body-lg-size);
-  line-height: var(--type-body-lg-line);
-  color: var(--text-muted);
+  font-size: var(--slide-type-lead-size);
+  line-height: var(--slide-type-lead-leading);
+  letter-spacing: var(--slide-type-lead-tracking);
+  color: var(--ds-color-ink-muted);
   max-width: 48ch;
 }
-.eyebrow,
-.section-label,
+.running-head,
 .badge,
 .step-when,
 .metric-label,
 .slide-meta,
+.case-client,
 .chart figcaption {
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-line);
-  font-weight: var(--type-caption-weight);
-  color: var(--text-muted);
-}
-.eyebrow,
-.section-label,
-.step-when {
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: var(--slide-type-meta-size);
+  line-height: var(--slide-type-meta-leading);
+  font-weight: var(--slide-type-meta-weight);
+  letter-spacing: var(--slide-type-meta-tracking);
+  color: var(--ds-color-ink-muted);
 }
 .personal {
-  font-size: var(--type-body-lg-size);
-  line-height: var(--type-body-lg-line);
-  font-weight: var(--type-h3-weight);
-  color: var(--accent-text);
+  font-family: var(--slide-type-title-font);
+  font-size: var(--slide-type-lead-size);
+  line-height: var(--slide-type-lead-leading);
+  font-weight: var(--slide-type-title-weight);
+  color: var(--ds-color-accent);
 }
 a {
-  color: var(--accent-text);
+  color: inherit;
 }
 
-/* Title and closing: the message at the bottom left, as the design system's deck template asks. */
+/* A running head at the top of a slide (who, which part), never directly above
+   the heading. */
+.running-head {
+  position: absolute;
+  top: var(--slide-space-64);
+  left: var(--slide-space-64);
+  right: var(--slide-space-64);
+}
+.slide:has(> .slide-inner > .running-head) {
+  padding-top: calc(var(--slide-space-64) * 2);
+}
+
+/* Title and closing: the message at the bottom left. */
 .slide--title .slide-inner,
 .slide--closing .slide-inner {
-  justify-content: flex-end;
-}
-.slide--title .slide-inner {
   flex-direction: row;
   align-items: flex-end;
   justify-content: space-between;
+  gap: var(--slide-space-64);
 }
 .title-copy,
 .closing-copy {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
-}
-.title-copy .eyebrow::before {
-  content: "";
-  display: inline-block;
-  width: 0.6em;
-  height: 0.6em;
-  margin-right: 0.5em;
-  border-radius: var(--radius-pill);
-  background: var(--highlight);
-  vertical-align: 0.05em;
+  gap: var(--slide-space-24);
 }
 .title-image {
   width: 720px;
   max-height: 100%;
   object-fit: cover;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius-lg);
+  border-radius: var(--slide-radius-lg);
+  border: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
 }
 .slide-meta {
-  margin-top: var(--space-6);
+  margin-top: var(--slide-space-24);
 }
 
 /* Section divider. */
@@ -215,18 +190,20 @@ a {
   justify-content: center;
 }
 .section-title {
-  font-size: var(--type-display-size);
-  line-height: var(--type-display-line);
+  font-family: var(--slide-type-hero-font);
+  font-size: var(--slide-type-hero-size);
+  line-height: var(--slide-type-hero-leading);
+  font-weight: var(--slide-type-hero-weight);
+  letter-spacing: var(--slide-type-hero-tracking);
 }
 
-/* Problem: numbered pain points. */
+/* Problem: what hurts today, side by side under hairlines. */
 .points {
   list-style: none;
   display: grid;
   grid-template-columns: repeat(var(--columns, 3), 1fr);
-  gap: var(--space-8);
+  gap: var(--slide-space-32);
   margin-top: auto;
-  counter-reset: point;
 }
 .points-2 {
   --columns: 2;
@@ -237,20 +214,12 @@ a {
 .points li {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  padding-top: var(--space-6);
-  border-top: var(--stroke-edge) solid var(--border-strong);
-  counter-increment: point;
-}
-.points li::before {
-  content: counter(point);
-  font-size: var(--type-h2-size);
-  font-weight: var(--type-h2-weight);
-  color: var(--accent-text);
-  font-variant-numeric: tabular-nums;
+  gap: var(--slide-space-12);
+  padding-top: var(--slide-space-24);
+  border-top: calc(var(--ds-size-border) * 2) solid var(--ds-color-line-strong);
 }
 .points p {
-  color: var(--text-muted);
+  color: var(--ds-color-ink-muted);
 }
 
 /* Quote. */
@@ -260,13 +229,15 @@ a {
 .slide--quote figure {
   display: flex;
   flex-direction: column;
-  gap: var(--space-8);
+  gap: var(--slide-space-32);
   max-width: 1440px;
 }
 .slide--quote blockquote p {
-  font-size: var(--type-h1-size);
-  line-height: var(--type-h1-line);
-  font-weight: var(--type-h2-weight);
+  font-family: var(--slide-type-display-font);
+  font-size: var(--slide-type-display-size);
+  line-height: var(--slide-type-display-leading);
+  font-weight: var(--slide-type-display-weight);
+  letter-spacing: var(--slide-type-display-tracking);
   text-wrap: balance;
 }
 .slide--quote blockquote p::before {
@@ -284,25 +255,24 @@ html[lang="en"] .slide--quote blockquote p::after {
 .slide--quote figcaption {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding-left: var(--space-6);
-  border-left: var(--stroke-edge) solid var(--accent);
+  gap: var(--slide-space-4);
 }
 .quote-author {
-  font-size: var(--type-h3-size);
-  line-height: var(--type-h3-line);
-  font-weight: var(--type-h3-weight);
+  font-family: var(--slide-type-title-font);
+  font-size: var(--slide-type-title-size);
+  line-height: var(--slide-type-title-leading);
+  font-weight: var(--slide-type-title-weight);
 }
 .quote-role {
-  color: var(--text-muted);
-  font-size: var(--type-body-size);
+  color: var(--ds-color-ink-muted);
+  font-size: var(--slide-type-body-size);
 }
 
-/* Options and variants: cards, at most one highlighted. */
+/* Options and variants: cards with a hairline, at most one highlighted. */
 .options {
   display: grid;
   grid-template-columns: repeat(var(--columns, 3), 1fr);
-  gap: var(--space-6);
+  gap: var(--slide-space-24);
   margin-top: auto;
   align-items: stretch;
 }
@@ -316,32 +286,32 @@ html[lang="en"] .slide--quote blockquote p::after {
   position: relative;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  padding: var(--space-8);
-  border: var(--stroke-hairline) solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
+  gap: var(--slide-space-16);
+  padding: var(--slide-space-32);
+  border: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
+  border-radius: var(--slide-radius-md);
+  background: var(--ds-color-surface);
 }
 .option.is-highlight {
-  border: var(--stroke-edge) solid var(--accent);
+  border-color: var(--ds-color-accent);
 }
 .badge {
   position: absolute;
-  top: var(--space-8);
-  right: var(--space-8);
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-pill);
-  background: var(--accent-subtle);
-  color: var(--accent-text);
+  top: var(--slide-space-32);
+  right: var(--slide-space-32);
+  padding: var(--slide-space-4) var(--slide-space-16);
+  border-radius: var(--slide-radius-pill);
+  background: var(--ds-color-accent-soft);
+  color: var(--ds-color-accent);
 }
 .option-summary {
-  color: var(--text-muted);
+  color: var(--ds-color-ink-muted);
 }
 .option ul {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
+  gap: var(--slide-space-8);
+  margin-top: var(--slide-space-8);
   padding-left: 1.1em;
 }
 
@@ -349,61 +319,62 @@ html[lang="en"] .slide--quote blockquote p::after {
 .slide--case .slide-inner {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
-  gap: var(--space-16);
+  gap: var(--slide-space-64);
   align-items: end;
 }
 .case-copy {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--slide-space-24);
   align-self: stretch;
 }
 .case-story {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-8);
+  gap: var(--slide-space-32);
   margin-top: auto;
 }
 .case-story > div > p {
-  color: var(--text-muted);
-  margin-top: var(--space-2);
+  color: var(--ds-color-ink-muted);
+  margin-top: var(--slide-space-8);
 }
 .case-results {
   display: flex;
   flex-direction: column;
-  gap: var(--space-6);
+  gap: var(--slide-space-24);
 }
 .case-image {
   grid-column: 2;
   max-width: 100%;
-  border-radius: var(--radius-lg);
+  border-radius: var(--slide-radius-md);
 }
 
 /* Metrics and growth. */
 .metric {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
-  padding: var(--space-6) var(--space-8);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
-  border: var(--stroke-hairline) solid var(--border);
+  gap: var(--slide-space-8);
+  padding: var(--slide-space-24) var(--slide-space-32);
+  border-radius: var(--slide-radius-md);
+  background: var(--ds-color-surface);
+  border: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
 }
 .metric-value {
-  font-size: var(--type-display-size);
-  line-height: var(--type-display-line);
-  font-weight: var(--type-display-weight);
+  font-family: var(--slide-type-hero-font);
+  font-size: var(--slide-type-hero-size);
+  line-height: var(--slide-type-hero-leading);
+  font-weight: var(--slide-type-hero-weight);
+  letter-spacing: var(--slide-type-hero-tracking);
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
 }
 .metric-note {
-  color: var(--text-subtle);
-  font-size: var(--type-caption-size);
-  line-height: var(--type-caption-line);
+  color: var(--ds-color-ink-muted);
+  font-size: var(--slide-type-meta-size);
+  line-height: var(--slide-type-meta-leading);
 }
 .metrics-body {
   display: grid;
-  gap: var(--space-12);
+  gap: var(--slide-space-48);
   margin-top: auto;
 }
 .metrics-body.has-chart {
@@ -413,23 +384,25 @@ html[lang="en"] .slide--quote blockquote p::after {
 .metrics {
   display: grid;
   grid-template-columns: repeat(var(--columns, 3), 1fr);
-  gap: var(--space-6);
+  gap: var(--slide-space-24);
 }
 .has-chart .metrics {
   grid-template-columns: 1fr;
   gap: 0;
 }
 .has-chart .metric {
-  padding: var(--space-4) 0;
+  padding: var(--slide-space-16) 0;
   border: 0;
-  border-top: var(--stroke-hairline) solid var(--border);
+  border-top: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
   border-radius: 0;
   background: none;
   gap: 0;
 }
 .has-chart .metric-value {
-  font-size: var(--type-h1-size);
-  line-height: var(--type-h1-line);
+  font-family: var(--slide-type-display-font);
+  font-size: var(--slide-type-display-size);
+  line-height: var(--slide-type-display-leading);
+  letter-spacing: var(--slide-type-display-tracking);
 }
 .metrics-2 {
   --columns: 2;
@@ -443,16 +416,16 @@ html[lang="en"] .slide--quote blockquote p::after {
 .chart {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--slide-space-16);
 }
 .bars {
   list-style: none;
   display: flex;
   align-items: flex-end;
-  gap: var(--space-4);
+  gap: var(--slide-space-16);
   height: 440px;
-  margin-bottom: var(--space-8);
-  border-bottom: var(--stroke-focus) solid var(--border-strong);
+  margin-bottom: var(--slide-space-32);
+  border-bottom: calc(var(--ds-size-border) * 2) solid var(--ds-color-line-strong);
 }
 .bars li {
   flex: 1;
@@ -461,41 +434,40 @@ html[lang="en"] .slide--quote blockquote p::after {
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--slide-space-8);
   position: relative;
 }
 .bar {
   width: 100%;
   height: calc(var(--value) * 82%);
-  border-radius: var(--radius-md) var(--radius-md) 0 0;
-  background: var(--border-strong);
-  transform-origin: bottom;
+  border-radius: var(--slide-radius-sm) var(--slide-radius-sm) 0 0;
+  background: var(--ds-color-line-strong);
 }
 .bars .is-current .bar {
-  background: var(--accent);
+  background: var(--ds-color-accent);
 }
 .bar-value {
-  font-size: var(--type-data-size);
-  line-height: var(--type-data-line);
-  font-weight: var(--type-h3-weight);
+  font-size: var(--slide-type-label-size);
+  line-height: var(--slide-type-label-leading);
+  font-weight: var(--slide-type-label-weight);
   font-variant-numeric: tabular-nums;
 }
 .bar-label {
   position: absolute;
-  bottom: calc(-1 * var(--space-8));
-  font-size: var(--type-caption-size);
-  color: var(--text-muted);
+  bottom: calc(-1 * var(--slide-space-32));
+  font-size: var(--slide-type-meta-size);
+  color: var(--ds-color-ink-muted);
 }
 .chart-unit {
-  color: var(--text-subtle);
+  color: var(--ds-color-ink-muted);
 }
 
-/* Timeline. */
+/* Timeline: a line of steps, each with its time under its name. */
 .steps {
   list-style: none;
   display: grid;
   grid-template-columns: repeat(var(--columns, 4), 1fr);
-  gap: var(--space-6);
+  gap: var(--slide-space-24);
   margin-top: auto;
   position: relative;
 }
@@ -514,28 +486,27 @@ html[lang="en"] .slide--quote blockquote p::after {
 .steps::before {
   content: "";
   position: absolute;
-  top: calc(var(--space-3) - var(--stroke-focus) / 2);
+  top: calc(var(--slide-space-12) - var(--ds-size-border));
   left: 0;
   right: 0;
-  height: var(--stroke-focus);
-  background: var(--border);
+  height: calc(var(--ds-size-border) * 2);
+  background: var(--ds-color-line);
 }
 .steps li {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--slide-space-8);
   position: relative;
 }
 .step-dot {
-  width: var(--space-6);
-  height: var(--space-6);
-  border-radius: var(--radius-pill);
-  background: var(--accent);
-  border: var(--stroke-edge) solid var(--surface);
-  margin-bottom: var(--space-4);
+  width: var(--slide-space-24);
+  height: var(--slide-space-24);
+  border-radius: var(--slide-radius-pill);
+  background: var(--ds-color-accent);
+  margin-bottom: var(--slide-space-16);
 }
 .steps p:not(.step-when) {
-  color: var(--text-muted);
+  color: var(--ds-color-ink-muted);
 }
 
 /* Video: local file, muted until someone turns the sound on. The words on
@@ -544,8 +515,8 @@ html[lang="en"] .slide--quote blockquote p::after {
   display: grid;
   grid-template-columns: 1fr 2fr;
   grid-template-rows: auto 1fr;
-  column-gap: var(--space-12);
-  row-gap: var(--space-6);
+  column-gap: var(--slide-space-48);
+  row-gap: var(--slide-space-24);
   align-content: center;
 }
 .slide--video h2,
@@ -557,15 +528,15 @@ html[lang="en"] .slide--quote blockquote p::after {
   grid-row: 1 / span 2;
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--slide-space-16);
 }
 .video video {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: contain;
-  border-radius: var(--radius-lg);
-  border: var(--stroke-hairline) solid var(--border);
-  background: var(--surface-raised);
+  border-radius: var(--slide-radius-md);
+  border: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
+  background: var(--ds-color-surface);
   cursor: pointer;
 }
 .video-print {
@@ -573,45 +544,49 @@ html[lang="en"] .slide--quote blockquote p::after {
 }
 .video-controls {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--slide-space-12);
 }
 .video-controls button,
 .action {
-  font: inherit;
-  font-size: var(--type-body-size);
-  line-height: var(--type-body-line);
-  padding: var(--space-3) var(--space-6);
-  border-radius: var(--radius-md);
-  border: var(--stroke-hairline) solid var(--border-strong);
-  background: var(--surface-raised);
-  color: var(--text);
+  font-family: var(--slide-type-label-font);
+  font-size: var(--slide-type-label-size);
+  line-height: var(--slide-type-label-leading);
+  font-weight: var(--slide-type-label-weight);
+  min-height: calc(var(--ds-size-control-md) * 2);
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--slide-space-40);
+  border-radius: var(--slide-radius-pill);
+  border: calc(var(--ds-size-border) * 2) solid var(--ds-color-line-strong);
+  background: var(--ds-color-surface);
+  color: var(--ds-color-ink);
   cursor: pointer;
   text-decoration: none;
 }
 .video-controls button[aria-pressed="true"] {
-  background: var(--accent-subtle);
-  color: var(--accent-text);
+  background: var(--ds-color-surface-selected);
 }
 
 /* Appendix. */
 .appendix-body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  gap: var(--space-12);
+  gap: var(--slide-space-48);
   margin-top: auto;
 }
 .items {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-6) var(--space-8);
+  gap: var(--slide-space-24) var(--slide-space-32);
 }
 .items dt {
-  font-size: var(--type-h4-size);
-  line-height: var(--type-h4-line);
-  font-weight: var(--type-h4-weight);
+  font-family: var(--slide-type-title-font);
+  font-size: var(--slide-type-title-size);
+  line-height: var(--slide-type-title-leading);
+  font-weight: var(--slide-type-title-weight);
 }
 .items dd {
-  color: var(--text-muted);
+  color: var(--ds-color-ink-muted);
 }
 .table {
   border-collapse: collapse;
@@ -620,117 +595,99 @@ html[lang="en"] .slide--quote blockquote p::after {
 .table th,
 .table td {
   text-align: left;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: var(--stroke-hairline) solid var(--border);
-  font-size: var(--type-body-sm-size);
-  line-height: var(--type-body-sm-line);
+  padding: var(--slide-space-12) var(--slide-space-16);
+  border-bottom: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
+  font-size: var(--slide-type-body-sm-size);
+  line-height: var(--slide-type-body-sm-leading);
 }
 .table thead th {
-  font-size: var(--type-caption-size);
-  color: var(--text-muted);
-  font-weight: var(--type-caption-weight);
+  font-size: var(--slide-type-meta-size);
+  color: var(--ds-color-ink-muted);
+  font-weight: var(--slide-type-meta-weight);
 }
 .table td {
   font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
-/* Closing: call to action and contact. */
-.slide--closing .slide-inner {
-  flex-direction: row;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--space-16);
-}
+/* Closing: the one action (black) and the contact. */
 .actions {
   display: flex;
-  gap: var(--space-4);
-  margin-top: var(--space-4);
+  gap: var(--slide-space-16);
+  margin-top: var(--slide-space-16);
 }
 .action.is-primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: var(--on-accent);
+  background: var(--ds-color-action);
+  border-color: var(--ds-color-action);
+  color: var(--ds-color-on-action);
 }
 .contact {
   font-style: normal;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--slide-space-4);
   min-width: 440px;
-  padding-left: var(--space-6);
-  border-left: var(--stroke-edge) solid var(--accent);
+  padding: var(--slide-space-24) var(--slide-space-32);
+  border: calc(var(--ds-size-border) * 2) solid var(--ds-color-line);
+  border-radius: var(--slide-radius-md);
+  background: var(--ds-color-surface);
 }
 .contact-name {
-  font-size: var(--type-h3-size);
-  line-height: var(--type-h3-line);
-  font-weight: var(--type-h3-weight);
+  font-family: var(--slide-type-title-font);
+  font-size: var(--slide-type-title-size);
+  line-height: var(--slide-type-title-leading);
+  font-weight: var(--slide-type-title-weight);
 }
 .contact-role {
-  color: var(--text-muted);
+  color: var(--ds-color-ink-muted);
+}
+.contact a {
+  text-decoration-color: var(--ds-color-accent);
 }
 
-/* Controls of the deck, outside the stage. */
+/* The deck's controls outside the stage: the floating layer, the design
+   system's buttons at screen size. */
 .deck-controls {
   position: fixed;
   left: 50%;
-  bottom: 16px;
+  bottom: var(--ds-space-16);
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px;
-  border-radius: 12px;
-  background: var(--surface-raised);
-  border: 1px solid var(--border);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 0.12);
-  font-size: 14px;
-  transition: opacity 200ms ease;
-  z-index: 10;
-}
-.deck-control {
-  white-space: nowrap;
-  font: inherit;
-  font-size: 14px;
-  line-height: 20px;
-  padding: 8px 12px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
-  color: var(--text);
-  cursor: pointer;
-  text-decoration: none;
-}
-.deck-control:disabled {
-  opacity: 0.4;
-  cursor: default;
-}
-.deck-control:focus-visible,
-.video-controls button:focus-visible,
-.action:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
+  gap: var(--ds-space-8);
+  padding: var(--ds-space-8);
+  border-radius: var(--ds-radius-pill);
+  background: var(--ds-color-surface-raised);
+  border: var(--ds-size-border) solid var(--ds-color-line);
+  box-shadow: var(--ds-shadow-float);
+  transition: opacity var(--ds-duration-base) var(--ds-ease-out);
+  z-index: var(--ds-z-sticky);
 }
 .deck-counter {
-  min-width: 64px;
+  min-width: var(--ds-space-64);
   text-align: center;
+  font-size: var(--ds-type-meta-size);
   font-variant-numeric: tabular-nums;
-  color: var(--text-muted);
+  color: var(--ds-color-ink-muted);
 }
 .deck-progress {
   position: fixed;
   left: 0;
   right: 0;
   top: 0;
-  height: 3px;
+  height: var(--ds-size-indicator);
 }
 .deck-progress div {
   height: 100%;
   width: 0;
-  background: var(--accent);
-  transition: width 200ms ease;
+  background: var(--ds-color-accent);
+  transition: width var(--ds-duration-base) var(--ds-ease-out);
 }
 body.is-idle .deck-controls {
   opacity: 0;
+}
+body.is-idle .deck-controls:focus-within {
+  opacity: 1;
 }
 @media (max-width: 640px) {
   #present,
@@ -738,36 +695,26 @@ body.is-idle .deck-controls {
     display: none;
   }
 }
-body.is-idle .deck-controls:focus-within {
-  opacity: 1;
-}
-:fullscreen body {
-  background: #000;
-}
 
-/* Motion when a slide opens; none with reduced motion. */
+/* Motion when a slide opens: transform and opacity only, from 0.95, none with
+   reduced motion. */
 @media screen and (prefers-reduced-motion: no-preference) {
   .slide.is-active .slide-inner > * {
-    animation: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+    animation: rise var(--ds-duration-slow) var(--ds-ease-out) both;
   }
   .slide.is-active .steps li {
-    animation: rise 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: calc(240ms + var(--step) * 180ms);
+    animation: rise var(--ds-duration-slow) var(--ds-ease-out) both;
+    animation-delay: calc(var(--ds-duration-base) + var(--step) * var(--ds-duration-fast));
   }
   .slide.is-active .bar {
-    animation: grow 640ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
-    animation-delay: calc(200ms + var(--bar) * 90ms);
+    animation: rise var(--ds-duration-slow) var(--ds-ease-out) both;
+    animation-delay: calc(var(--ds-duration-base) + var(--bar) * var(--ds-duration-press));
   }
 }
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(24px);
-  }
-}
-@keyframes grow {
-  from {
-    transform: scaleY(0);
+    transform: translateY(var(--slide-space-16)) scale(0.98);
   }
 }
 
@@ -816,6 +763,6 @@ body.is-idle .deck-controls:focus-within {
     width: 100%;
     aspect-ratio: 16 / 9;
     object-fit: contain;
-    border-radius: var(--radius-lg);
+    border-radius: var(--slide-radius-md);
   }
 }

@@ -8,8 +8,10 @@ The release version (semver) is independent of the app generation
 Presentations becomes a full presentation module: decks built from a short
 structured source, eleven slide types, local video, personal versions for a
 prospect, Czech and English, the look of the module's design system and
-skills for agents. The App stays generation `app/v1` and stack profile
-`app@2026.11`; nothing is migrated. Builds on 0.1.1.
+skills for agents. The library and the decks wear the design system package
+`design-system` (`LazurioTemplates/design-system` v2.0.0). The App stays
+generation `app/v1` and stack profile `app@2026.11`; nothing is migrated.
+Builds on 0.1.1.
 
 ### Added
 
@@ -39,10 +41,18 @@ skills for agents. The App stays generation `app/v1` and stack profile
   default); a deck can carry both languages, each with its own page,
   metadata and first-slide preview, and a switch between them. The API takes
   `?lang=`.
-- **Design system**: `design-system/` is a subtree merge of
-  `LazurioTemplates/design-system` v1.0.0; decks take its colour roles, type
-  scale and spacing through its own `tokens.ts`, at slide scale, with the
-  template's local fonts. A newer release arrives as a merge of its tag.
+- **Design system as a package**: `design-system` is a dependency of the App
+  on a released tag (`github:LazurioTemplates/design-system#v2.0.0`, pinned
+  in `bun.lock`), as the Lazurio Module Standard asks. The library imports
+  `design-system/styles.css` once and uses its React components (`Button`,
+  `TextField`, `TextArea`, `Alert`, `EmptyState`, `Icon`) and classes; its
+  language comes from the design system's `readLazurioLocale()` and
+  `resolveLocale()`. `deck:build` puts the package's stylesheet (colour roles
+  of both themes, fonts, base styles) and its fonts with their licenses into
+  each deck and scales `design-system/tokens` (type roles, spacing, radii) to
+  the slide; a slide's tone is the design system's `data-theme`, the deck's
+  controls are its buttons and icons. An Organization's own design system is
+  one changed dependency line ([docs/design-system.md](docs/design-system.md)).
 - **Skills for agents** in `.agents/skills/` and `.claude/skills/`:
   `deck-from-sources`, `deck-personal-version`, `deck-add-slide`.
 - **Sample deck** of the invented company Example (an office coffee offer),
@@ -53,7 +63,9 @@ skills for agents. The App stays generation `app/v1` and stack profile
 - Tests: the deck source, the build and its drift, escaping, the link
   parameters, both languages, the sample deck, previews per language, the
   template contract (license, documents, exact versions, screens, skills,
-  the design system subtree, paths that check out on Windows) and the empty
+  the design system as a package on a tag and no relative import of it, the
+  paths that check out on Windows),
+  the design system in the library and in every built deck, and the empty
   start on a fresh checkout (`tests/empty-start.test.ts`, now for the sample
   deck: its directory, its two previews and `tests/sample-deck.test.ts`).
 
@@ -63,22 +75,28 @@ skills for agents. The App stays generation `app/v1` and stack profile
   s Agentem" brief names the skill `deck-from-sources` and `deck:build`.
 - A preview per language: `<slug>.<language>.jpg` beside `<slug>.jpg` for
   every further language of a deck.
-- `docs/design-system.md` describes both looks: the decks from the design
-  system, the library from the Lazurio snapshot.
-
+- The look follows the design system's rules: no uppercase and no eyebrow
+  labels above headings (the title's `eyebrow`, the section's `label` and the
+  appendix mark are a running head at the top of the slide; the case study's
+  client and the timeline's time sit under their titles), hairlines instead
+  of thick edges and shadows, no decorative numbering of problem points, one
+  black action, motion from the design system's durations and curves.
 ### Removed
 
 - The four-slide starter `2026-10-11-project-proposal` and its preview; the
   sample deck replaces it. Hand-written decks keep working.
 - The screens of 0.1 in `docs/screenshots/*.webp` (now per language).
+- The frozen Lazurio snapshot `app/v1/public/lazurio/` and its
+  `vendor.lock.json`: the design system package replaces it.
 
 ### For adopted modules
 
 Take 0.1.1 first, then merge the tag `v0.2.0` as
 [docs/extending.md](docs/extending.md#from-01x-to-020) describes: keep your
-identity and decks, set the language in `app/v1/src/instance.ts`, decide
-whether to keep the sample deck, and run `bun run deck:build` and
-`bun run check`.
+identity and decks, run `bun install` (the design system package), set the
+language in `app/v1/src/instance.ts`, decide whether to keep the sample
+deck, and run `bun run deck:build` and `bun run check`. An Organization with
+its own design system changes the `design-system` line to its own release.
 
 ## 0.1.1 — 2026-11-08
 

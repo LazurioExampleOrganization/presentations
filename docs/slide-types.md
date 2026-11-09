@@ -54,13 +54,13 @@ release 0.1) still works in the library; the build leaves it alone.
 
 | Type | Use it for | Fields (`?` optional) | Limits |
 | --- | --- | --- | --- |
-| `title` | the opening | `eyebrow?`, `title`, `subtitle?`, `meta?`, `image?` | the "Prepared for" line appears under the subtitle |
-| `section` | a divider between parts | `label?`, `title`, `lede?` | |
+| `title` | the opening | `eyebrow?`, `title`, `subtitle?`, `meta?`, `image?` | `eyebrow` is the running head at the top (who, what kind of deck), never a label above the title; the "Prepared for" line appears under the subtitle |
+| `section` | a divider between parts | `label?`, `title`, `lede?` | `label` is the running head at the top |
 | `problem` | what hurts today | `title`, `lede?`, `points[]` of `{title, text}` | 2–4 points |
 | `quote` | one voice of a client or colleague | `quote`, `author`, `role?` | real quotes only with the person's consent |
 | `options` | models, variants, packages | `title`, `lede?`, `options[]` of `{name, summary?, points[], badge?, highlight?}` | 2–4 options, 1–5 points each, at most one `highlight` |
-| `case` | a case study | `client`, `title`, `context?`, `challenge`, `solution`, `results[]` of `{value, label, note?}`, `image?` | 1–3 results |
-| `timeline` | how cooperation goes, a plan | `title`, `lede?`, `steps[]` of `{when?, title, text?}` | 2–6 steps; they appear one by one |
+| `case` | a case study | `client`, `title`, `context?`, `challenge`, `solution`, `results[]` of `{value, label, note?}`, `image?` | 1–3 results; `client` shows under the title |
+| `timeline` | how cooperation goes, a plan | `title`, `lede?`, `steps[]` of `{when?, title, text?}` | 2–6 steps; they appear one by one, `when` under each step's title |
 | `metrics` | growth and numbers | `title`, `lede?`, `metrics[]` of `{value, label, note?}`, `chart?` of `{label, unit?, bars[] of {label, value}}` | 1–4 metrics, 2–8 bars; the last bar is the current one, in the accent colour |
 | `video` | a local video | `title`, `lede?`, `video` of `{src, poster, captions?, audio?, autoplay?}` | `.mp4` or `.webm` and a poster image in `media/` |
 | `appendix` | detail for questions | `title`, `lede?`, `items[]` of `{title, text}`, `table?` of `{columns[], rows[][]}` | items or a table or both; 2–5 columns, 1–8 rows |
@@ -98,8 +98,10 @@ for `image` and a plain `media/<file>` for a poster; `.jpg`, `.png`,
 
 ## Look
 
-Colours, type scale, spacing and radii come from the module's design system
-(`design-system/content/brand/colors/tokens.json`, read through
-`design-system/app/v1/src/tokens.ts`), at twice its screen size for the
-1920 × 1080 slide. Change the look in the design system, then rebuild the
-decks; never edit `assets/deck.css`.
+Colours, fonts, type scale, spacing and radii come from the module's design
+system, the package `design-system` ([design](design-system.md)): its
+`styles.css` and its tokens at twice their screen size for the 1920 × 1080
+slide. Its rules hold on slides too: no uppercase, no eyebrow labels above
+headings, hairlines instead of shadows, one black action. Change the look in
+the design system (a new release, a new pin), then rebuild the decks; never
+edit `assets/deck.css`.
