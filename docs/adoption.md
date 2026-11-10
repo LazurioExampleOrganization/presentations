@@ -11,7 +11,9 @@ Agent prepares; the person approves every merge and activation.
   the Marketplace entry). A branch name is not a release.
 - The target Organization, confirmed by the person, and the module name
   (default `presentations`).
-- How the library starts: with the synthetic starter or empty.
+- How the library starts: with the sample deck of the release or empty.
+- The language of the Organization's Lazurio (`cs` or `en`): the `locale`
+  of the Folder profile (Settings → General). Confirm it with the person.
 
 ## 1. Check before changing anything
 
@@ -90,14 +92,30 @@ ancestor so later releases merge normally. Resolve overlaps:
 - `app/v1/package.json`: keep the scaffold's `lazurio.runtime.id`, `company`
   and `module`; take the template's dependencies, scripts, `listeners`,
   `preparation` and the rest of `lazurio`.
-- Take the template's app source, tests, design snapshot, starter deck and
-  preview. Remove the scaffold greeting and its test; the template serves
-  through one Bun server and uses Vite only for the build.
-- Empty start: remove `data/v1/decks/2026-10-11-project-proposal/`, its
-  preview `app/v1/public/previews/2026-10-11-project-proposal.jpg` and
-  `app/v1/tests/template-seed.test.ts`. Nothing else names the starter, and
+- Take the template's app source, tests, skills (`.agents/skills/`,
+  `.claude/skills/`),
+  sample deck and previews. Remove the scaffold greeting and its test; the
+  template serves through one Bun server and uses Vite only for the build.
+- Language: set `language` in `app/v1/src/instance.ts` to the confirmed
+  language. Where the App's origin answers `/.lazurio/shell.json`, its
+  `locale` wins.
+- Empty start: remove `data/v1/decks/2026-11-02-example-office-coffee/`,
+  its two previews `app/v1/public/previews/2026-11-02-example-office-coffee.jpg`
+  and `app/v1/public/previews/2026-11-02-example-office-coffee.en.jpg`, and
+  `app/v1/tests/sample-deck.test.ts`. Nothing else names the sample, and
   `data/v1/decks/.gitkeep` keeps the empty library in Git;
   `tests/empty-start.test.ts` checks exactly this path.
+- The design system: the App depends on the package `design-system`
+  (`github:LazurioTemplates/design-system#v2.0.0`, the invented brand
+  Example). When the Organization has adopted and released its own design
+  system, change that one line in `app/v1/package.json` to
+  `git+ssh://git@github.com/<Organization>/design-system.git#v<version>`,
+  then `bun install`, `bun run deck:build` and `bun run check`, in this pull
+  request or a later one ([design](design-system.md)). The checks accept
+  that pin; the tests of the template alone skip once the identity is the
+  Organization's. Known limit: the
+  module's CI cannot install a private design system yet
+  (Lazurio/LazurioPlatform#915); the check runs on the Environment.
 - Record the adopted release (tag and commit) in the module README.
 
 Then in `app/v1`: `bun install --frozen-lockfile` and `bun run check` (it
@@ -111,7 +129,8 @@ root, run `lazurio module setup <module-root> --root <Lazurio-root> --json`
 and `lazurio module start <Organization>/<module> --json`. From `main`
 Lazurio builds the client (`build` → `dist`) and starts the production
 server (`start`), which serves that build. Open the returned URL and check
-the library, detail, Agent brief and playback in the browser.
+the library, the detail with its personal version, the Agent brief and
+presenting a deck, in the Organization's language.
 Adoption is done only when this works; a clone or a health check is not
 enough.
 

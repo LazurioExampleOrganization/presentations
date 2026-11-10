@@ -1,6 +1,12 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
-import type { DeckDetail, DeckExportFile, DeckMeta, DeckSummary } from "./model.ts";
+import type {
+  DeckDetail,
+  DeckExportFile,
+  DeckMeta,
+  DeckSummary,
+  DeckVariantMeta,
+} from "./model.ts";
 import {
   DECKS_ROOT,
   EXPORTS_ROOT,
@@ -118,30 +124,70 @@ export async function listDeckSlugs(): Promise<string[]> {
   return slugs.sort((a, b) => b.localeCompare(a));
 }
 
+const VARIANT_FILE = /^index(\.[a-z]{2})?\.html$/;
+
+/** The languages a deck's metadata lists, each with its own page; the primary language first. */
+function variantsOf(meta: DeckMeta | null): DeckVariantMeta[] {
+  if (!Array.isArray(meta?.variants)) return [];
+  return meta.variants.filter(
+    (variant) =>
+      typeof variant?.language === "string" &&
+      typeof variant.file === "string" &&
+      VARIANT_FILE.test(variant.file),
+  );
+}
+
+/**
+ * The deck as seen in one language: the variant in `language` when the deck
+ * has it, otherwise its primary language. A deck without variants is one page.
+ */
+function pickVariant(meta: DeckMeta | null, language: string | undefined) {
+  const variants = variantsOf(meta);
+  const primary = variants[0];
+  const chosen = variants.find((variant) => variant.language === language) ?? primary;
+  return { variants, primary, chosen };
+}
+
+function strings(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((entry) => typeof entry === "string") : [];
+}
+
 function buildSummary(
   slug: string,
   html: string | null,
   meta: DeckMeta | null,
   exportCount: number,
+  language?: string,
 ): DeckSummary {
-  const title = meta?.title?.trim() || (html ? titleFromHtml(html) : null) || slug;
+  const { variants, primary, chosen } = pickVariant(meta, language);
+  const file = chosen?.file && chosen.file !== "index.html" ? chosen.file : "";
+  const shown = chosen?.language ?? meta?.language?.trim() ?? null;
+  const title =
+    chosen?.title?.trim() || meta?.title?.trim() || (html ? titleFromHtml(html) : null) || slug;
+  const preview =
+    chosen && primary && chosen.language !== primary.language
+      ? `${slug}.${chosen.language}.jpg`
+      : `${slug}.jpg`;
   return {
     slug,
     title,
     date: meta?.created_at?.trim() || dateFromSlug(slug),
     purpose: meta?.purpose?.trim() || null,
     status: meta?.status?.trim() || null,
-    language: meta?.language?.trim() || null,
-    audience: Array.isArray(meta?.audience) ? meta.audience : [],
+    language: shown || null,
+    audience: strings(chosen?.audience ?? meta?.audience),
     portfolioModel: meta?.portfolio_model?.trim() || null,
     slideCount: html ? countSlides(html) : 0,
     hasMeta: meta !== null,
     exportCount,
-    deckUrl: `/decks/${slug}/`,
+    deckUrl: `/decks/${slug}/${file}`,
+    previewUrl: `/previews/${preview}`,
+    languages: variants.length > 0 ? variants.map((variant) => variant.language as string) : [],
+    personal: meta?.personal === true,
   };
 }
 
-export async function getDeckSummary(slug: string): Promise<DeckSummary | null> {
+export async function getDeckSummary(slug: string, language?: string): Promise<DeckSummary | null> {
   if (!isValidDeckSlug(slug)) return null;
   // Discovery reads index.html/deck.meta.json directly, so apply the same
   // symlink-aware containment the serving routes use before reading.
@@ -149,31 +195,47 @@ export async function getDeckSummary(slug: string): Promise<DeckSummary | null> 
   const html = await readDeckHtml(slug);
   if (html === null) return null;
   const [meta, exports] = await Promise.all([readDeckMeta(slug), listExportFiles(slug)]);
-  return buildSummary(slug, html, meta, exports.length);
+  return buildSummary(slug, html, meta, exports.length, language);
 }
 
-export async function getDeckSummaries(): Promise<DeckSummary[]> {
+export async function getDeckSummaries(language?: string): Promise<DeckSummary[]> {
   const slugs = await listDeckSlugs();
-  const summaries = await Promise.all(slugs.map((slug) => getDeckSummary(slug)));
+  const summaries = await Promise.all(slugs.map((slug) => getDeckSummary(slug, language)));
   return summaries.filter((summary): summary is DeckSummary => summary !== null);
 }
 
-export async function getDeckDetail(slug: string): Promise<DeckDetail | null> {
+export async function getDeckDetail(slug: string, language?: string): Promise<DeckDetail | null> {
   if (!isValidDeckSlug(slug)) return null;
   if (!(await isRealpathWithinDecks(path.join(DECKS_ROOT, slug)))) return null;
   const html = await readDeckHtml(slug);
   if (html === null) return null;
   const [meta, exports] = await Promise.all([readDeckMeta(slug), listExportFiles(slug)]);
-  const summary = buildSummary(slug, html, meta, exports.length);
+  const summary = buildSummary(slug, html, meta, exports.length, language);
+  const { chosen } = pickVariant(meta, language);
   return {
     ...summary,
-    owner: meta?.owner?.trim() || null,
+    owner: (chosen?.owner ?? meta?.owner)?.trim() || null,
     createdAt: meta?.created_at?.trim() || null,
     updatedAt: meta?.updated_at?.trim() || null,
-    primaryGoal: meta?.primary_goal?.trim() || null,
+    primaryGoal: (chosen?.primary_goal ?? meta?.primary_goal)?.trim() || null,
     mentalModel: meta?.mental_model?.trim() || null,
-    sources: Array.isArray(meta?.sources) ? meta.sources : [],
+    sources: strings(chosen?.sources ?? meta?.sources),
     exports,
     meta,
   };
+}
+
+/**
+ * The first-slide previews the library shows: `<slug>.jpg` for every deck and
+ * `<slug>.<language>.jpg` for each further language of a deck built from a
+ * source, so a library in that language shows a preview in it.
+ */
+export async function expectedPreviews(): Promise<string[]> {
+  const names: string[] = [];
+  for (const slug of await listDeckSlugs()) {
+    names.push(slug);
+    const [, ...others] = variantsOf(await readDeckMeta(slug));
+    for (const variant of others) names.push(`${slug}.${variant.language}`);
+  }
+  return names;
 }

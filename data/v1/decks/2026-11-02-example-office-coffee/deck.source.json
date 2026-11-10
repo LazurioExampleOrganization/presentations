@@ -1,0 +1,313 @@
+{
+  "schema_version": "lazurio.presentation.source.v1",
+  "languages": ["cs", "en"],
+  "title": {
+    "cs": "Example · Káva pro vaši kancelář",
+    "en": "Example · Coffee for your office"
+  },
+  "purpose": "offer",
+  "status": "synthetic-example",
+  "owner": { "cs": "Obchodní tým Example", "en": "Example sales team" },
+  "audience": [
+    { "cs": "Provozní manažeři kanceláří", "en": "Office managers" },
+    { "cs": "Vedení menších firem", "en": "Leaders of small companies" }
+  ],
+  "sources": [
+    {
+      "cs": "Vymyšlená ukázka; Example ani její klienti neexistují.",
+      "en": "An invented sample; neither Example nor its clients exist."
+    }
+  ],
+  "primary_goal": {
+    "cs": "Ukázat všechny typy slidů na jedné nabídce vymyšlené firmy Example.",
+    "en": "Show every slide type on one offer of the invented company Example."
+  },
+  "created_at": "2026-11-02",
+  "updated_at": "2026-11-06",
+  "slides": [
+    {
+      "type": "title",
+      "eyebrow": { "cs": "Example · nabídka", "en": "Example · offer" },
+      "title": {
+        "cs": "Káva, která se o sebe postará",
+        "en": "Office coffee that takes care of itself"
+      },
+      "subtitle": {
+        "cs": "Kávovar, zrna a servis pro vaši kancelář v jednom měsíčním paušálu.",
+        "en": "A machine, beans and service for your office in one monthly fee."
+      },
+      "meta": { "cs": "Example · listopad 2026", "en": "Example · November 2026" },
+      "image": {
+        "src": "media/coffee-setup-poster.jpg",
+        "alt": {
+          "cs": "Kávovar a hotový šálek kávy",
+          "en": "A coffee machine and a finished cup of coffee"
+        }
+      },
+      "notes": {
+        "cs": "Přivítat, představit se, zeptat se, kolik lidí v kanceláři pije kávu.",
+        "en": "Welcome, introduce yourself, ask how many people in the office drink coffee."
+      }
+    },
+    {
+      "type": "problem",
+      "title": {
+        "cs": "Kancelářská káva dnes stojí víc, než se zdá",
+        "en": "Office coffee costs more than it seems"
+      },
+      "lede": {
+        "cs": "Ve většině kanceláří se o kávu stará ten, kdo zrovna má čas.",
+        "en": "In most offices coffee is looked after by whoever has a moment."
+      },
+      "points": [
+        {
+          "title": { "cs": "Kávovar se rozbije v nejhorší chvíli", "en": "The machine breaks at the worst moment" },
+          "text": {
+            "cs": "Oprava trvá dny a tým si mezitím nosí kávu z kavárny.",
+            "en": "A repair takes days, and meanwhile the team buys coffee outside."
+          }
+        },
+        {
+          "title": { "cs": "Zrna docházejí nepravidelně", "en": "Beans run out at random" },
+          "text": {
+            "cs": "Nákupy na poslední chvíli vycházejí dráž a berou čas.",
+            "en": "Last-minute shopping costs more and takes time."
+          }
+        },
+        {
+          "title": { "cs": "Nikdo nevidí, kolik káva stojí", "en": "Nobody sees what coffee costs" },
+          "text": {
+            "cs": "Účtenky z pěti míst se nedají porovnat s žádným rozpočtem.",
+            "en": "Receipts from five places do not add up to any budget."
+          }
+        }
+      ]
+    },
+    {
+      "type": "metrics",
+      "title": {
+        "cs": "Lepší kávu s námi pije už 86 kanceláří",
+        "en": "86 offices already drink better coffee with us"
+      },
+      "metrics": [
+        {
+          "value": "86",
+          "label": { "cs": "kanceláří v péči", "en": "offices in our care" }
+        },
+        {
+          "value": { "cs": "4,7 z 5", "en": "4.7 of 5" },
+          "label": { "cs": "průměrné hodnocení týmů", "en": "average team rating" }
+        },
+        {
+          "value": { "cs": "do 24 h", "en": "within 24 h" },
+          "label": { "cs": "servis na místě", "en": "service on site" },
+          "note": { "cs": "v pracovní dny", "en": "on working days" }
+        }
+      ],
+      "chart": {
+        "label": { "cs": "Kanceláře v péči podle roku", "en": "Offices in our care by year" },
+        "bars": [
+          { "label": "2022", "value": 12 },
+          { "label": "2023", "value": 27 },
+          { "label": "2024", "value": 45 },
+          { "label": "2025", "value": 64 },
+          { "label": "2026", "value": 86 }
+        ]
+      }
+    },
+    {
+      "type": "section",
+      "label": { "cs": "Část 2", "en": "Part 2" },
+      "title": { "cs": "Jak to funguje", "en": "How it works" },
+      "lede": {
+        "cs": "Tři balíčky, jeden měsíční paušál a servis, o který se nemusíte starat.",
+        "en": "Three packages, one monthly fee and service you never have to think about."
+      }
+    },
+    {
+      "type": "options",
+      "title": {
+        "cs": "Vyberte balíček podle velikosti týmu",
+        "en": "Choose a package by the size of your team"
+      },
+      "options": [
+        {
+          "name": "Start",
+          "summary": { "cs": "Do 10 lidí", "en": "Up to 10 people" },
+          "points": [
+            { "cs": "Automatický kávovar", "en": "An automatic machine" },
+            { "cs": "Zrna jednou měsíčně", "en": "Beans once a month" },
+            { "cs": "Servis do 48 hodin", "en": "Service within 48 hours" }
+          ]
+        },
+        {
+          "name": { "cs": "Tým", "en": "Team" },
+          "summary": { "cs": "Do 30 lidí", "en": "Up to 30 people" },
+          "badge": { "cs": "Nejčastější volba", "en": "Most chosen" },
+          "highlight": true,
+          "points": [
+            { "cs": "Kávovar s mlékem", "en": "A machine with milk" },
+            { "cs": "Zrna podle spotřeby", "en": "Beans as you use them" },
+            { "cs": "Servis do 24 hodin", "en": "Service within 24 hours" },
+            { "cs": "Měsíční přehled nákladů", "en": "A monthly cost overview" }
+          ]
+        },
+        {
+          "name": { "cs": "Firma", "en": "Company" },
+          "summary": { "cs": "Nad 30 lidí", "en": "Over 30 people" },
+          "points": [
+            { "cs": "Dva kávovary", "en": "Two machines" },
+            { "cs": "Ochutnávka nových zrn", "en": "Tastings of new beans" },
+            { "cs": "Servis do 24 hodin", "en": "Service within 24 hours" },
+            { "cs": "Vlastní kontaktní osoba", "en": "A contact person of your own" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "timeline",
+      "title": {
+        "cs": "Od ochutnávky k první kávě za dva týdny",
+        "en": "From a tasting to the first cup in two weeks"
+      },
+      "steps": [
+        {
+          "when": { "cs": "1. týden", "en": "Week 1" },
+          "title": { "cs": "Ochutnávka", "en": "Tasting" },
+          "text": {
+            "cs": "Přivezeme tři druhy zrn a tým vybere favorita.",
+            "en": "We bring three kinds of beans and the team picks a favourite."
+          }
+        },
+        {
+          "when": { "cs": "2. týden", "en": "Week 2" },
+          "title": { "cs": "Instalace", "en": "Setup" },
+          "text": {
+            "cs": "Kávovar zapojíme za jedno dopoledne.",
+            "en": "We set up the machine in one morning."
+          }
+        },
+        {
+          "when": { "cs": "1. měsíc", "en": "Month 1" },
+          "title": { "cs": "Ladění", "en": "Fine-tuning" },
+          "text": {
+            "cs": "Podle spotřeby upravíme dodávky zrn.",
+            "en": "We adjust the bean deliveries to what you use."
+          }
+        },
+        {
+          "when": { "cs": "Každý měsíc", "en": "Every month" },
+          "title": { "cs": "Péče", "en": "Care" },
+          "text": {
+            "cs": "Servis, zrna a jedna faktura.",
+            "en": "Service, beans and one invoice."
+          }
+        }
+      ]
+    },
+    {
+      "type": "video",
+      "title": { "cs": "Instalace za jedno dopoledne", "en": "Set up in one morning" },
+      "lede": {
+        "cs": "Kávovar přivezeme, zapojíme a první šálek ochutnáme s vámi.",
+        "en": "We bring the machine, set it up and taste the first cup with you."
+      },
+      "video": {
+        "src": "media/coffee-setup.mp4",
+        "poster": "media/coffee-setup-poster.jpg"
+      }
+    },
+    {
+      "type": "case",
+      "client": { "cs": "Ukázkové studio · 25 lidí", "en": "Sample studio · 25 people" },
+      "title": {
+        "cs": "Ukázkové studio řeší kávu jednou za měsíc",
+        "en": "A sample studio deals with coffee once a month"
+      },
+      "context": {
+        "cs": "Grafické studio s jednou kuchyňkou a hodně schůzkami s klienty.",
+        "en": "A design studio with one kitchen and many client meetings."
+      },
+      "challenge": {
+        "cs": "Starý kávovar stál každý měsíc a nákupy zrn zabíraly asistentce dvě hodiny.",
+        "en": "The old machine broke down every month, and buying beans took the assistant two hours."
+      },
+      "solution": {
+        "cs": "Balíček Tým s kávovarem na mléko a dodávkami podle spotřeby.",
+        "en": "The Team package with a milk machine and deliveries as they are used."
+      },
+      "results": [
+        {
+          "value": "−30 %",
+          "label": { "cs": "nákladů na kávu", "en": "coffee costs" }
+        },
+        {
+          "value": "0",
+          "label": { "cs": "dní bez kávy za rok", "en": "days without coffee in a year" }
+        },
+        {
+          "value": { "cs": "2 h", "en": "2 h" },
+          "label": { "cs": "ušetřené administrativy měsíčně", "en": "of admin saved every month" }
+        }
+      ]
+    },
+    {
+      "type": "quote",
+      "quote": {
+        "cs": "Konečně řešíme kávu jednou za měsíc, a to jen fakturu.",
+        "en": "We finally deal with coffee once a month, and only with the invoice."
+      },
+      "author": { "cs": "Provozní manažerka", "en": "Office manager" },
+      "role": { "cs": "Ukázkové studio", "en": "Sample studio" }
+    },
+    {
+      "type": "closing",
+      "title": {
+        "cs": "Ochutnejte u vás v kanceláři",
+        "en": "Taste it in your own office"
+      },
+      "lede": {
+        "cs": "Přijedeme s ochutnávkou a navrhneme balíček pro váš tým.",
+        "en": "We come with a tasting and suggest a package for your team."
+      },
+      "contact": {
+        "name": { "cs": "Obchodní tým Example", "en": "Example sales team" },
+        "role": { "cs": "Odpovíme do jednoho pracovního dne", "en": "We answer within one working day" },
+        "email": "coffee@example.com"
+      },
+      "actions": [
+        {
+          "label": { "cs": "Domluvit ochutnávku", "en": "Book a tasting" },
+          "href": "mailto:coffee@example.com"
+        }
+      ]
+    },
+    {
+      "type": "appendix",
+      "title": { "cs": "Co obsahují balíčky", "en": "What the packages include" },
+      "table": {
+        "columns": [
+          { "cs": "Balíček", "en": "Package" },
+          { "cs": "Lidí", "en": "People" },
+          { "cs": "Kávovary", "en": "Machines" },
+          { "cs": "Servis", "en": "Service" }
+        ],
+        "rows": [
+          ["Start", { "cs": "do 10", "en": "up to 10" }, "1", { "cs": "do 48 h", "en": "within 48 h" }],
+          [{ "cs": "Tým", "en": "Team" }, { "cs": "do 30", "en": "up to 30" }, "1", { "cs": "do 24 h", "en": "within 24 h" }],
+          [{ "cs": "Firma", "en": "Company" }, { "cs": "nad 30", "en": "over 30" }, "2", { "cs": "do 24 h", "en": "within 24 h" }]
+        ]
+      },
+      "items": [
+        {
+          "title": { "cs": "Smlouva", "en": "Contract" },
+          "text": { "cs": "Měsíční, výpověď kdykoli.", "en": "Monthly, cancel any time." }
+        },
+        {
+          "title": { "cs": "Zrna", "en": "Beans" },
+          "text": { "cs": "Z vymyšlené pražírny Example.", "en": "From Example's invented roastery." }
+        }
+      ]
+    }
+  ]
+}

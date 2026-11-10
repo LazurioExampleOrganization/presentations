@@ -20,7 +20,7 @@ if (!entrypoint) throw new Error("lazurio.runtime declares no listener");
 const variable = `LAZURIO_RUNTIME_LISTENER_${entrypoint.id.toUpperCase().replaceAll("-", "_")}`;
 const baseEnv = { HOME: process.env.HOME ?? "", PATH: dirname(process.execPath) };
 const startTimeoutMs = 60_000;
-// A deck of the library, when it has one; an empty start has none.
+// A deck of the library, when it has one (an empty start has none).
 const [anyDeck] = await listDeckSlugs();
 const cleanup: string[] = [];
 
@@ -154,7 +154,9 @@ async function withServer(
   } finally {
     server.kill("SIGTERM");
   }
-  expect(await server.exited).toBe(0);
+  const exitCode = await server.exited;
+  // Windows has no SIGTERM; the platform terminates the process instead.
+  if (process.platform !== "win32") expect(exitCode).toBe(0);
 }
 
 async function firstResponse(url: string, timeoutMs: number): Promise<Response> {

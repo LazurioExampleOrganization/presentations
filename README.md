@@ -1,33 +1,57 @@
 # Presentations
 
-A presentation library for a Lazurio Organization: browse first-slide
-previews, read a deck's purpose and sources, present HTML slides with arrow
-keys and print them to 16:9 PDF pages. "Vytvořit s Agentem" gives you a brief
-to paste into your own Agent's chat; the Agent agrees an outline with you,
-drafts the deck from your Organization's sources and prepares a pull request.
+A presentation module for a Lazurio Organization. Your Agent writes a deck
+from your sources as a short structured file, one command builds it into
+slides, and the library shows every deck with its first-slide preview, its
+purpose and its sources. Present in the browser, print to 16:9 PDF pages,
+play local videos, and open a personal version for one prospect with their
+name on the title slide. Everything works in Czech and in English.
 
 It is a free template of the Lazurio Marketplace, released under the
 [MIT License](LICENSE); see [NOTICE](NOTICE) for fonts and trademarks.
 
-![Library](docs/screenshots/library.webp)
+![Library](docs/screenshots/en/library.webp)
 
-## What it is and is not
+## What it does
 
-- One Bun server with a React gallery and a read-only API. Decks are files in
-  Git, so every change is a reviewable pull request.
-- No visual slide editor, AI API integration, PPTX export or automatic
-  publication. The app needs no account, API key or paid service; your Agent
-  and hosting keep their own costs. No SLA is offered.
-- The only bundled presentation is a synthetic four-slide project proposal.
-  The library and starter use the Lazurio design system with locally hosted
-  Inter Tight Variable and Geist Mono ([design provenance](docs/design-system.md)).
-- The app UI is in Czech.
+- **Decks from source.** A deck is `data/v1/decks/<date-slug>/deck.source.json`
+  with eleven slide types: title, section, problem, quote, options, case
+  study, timeline, metrics with a growth chart, video, appendix and
+  closing. `bun run deck:build` validates it and writes the slides
+  ([slide types](docs/slide-types.md)).
+- **Presenting.** A 1920 × 1080 stage fitted to any screen, arrow keys,
+  swipe, full screen, the slide in the address, print to one 16:9 page per
+  slide.
+- **Video.** Local files only; a video starts muted when its slide opens,
+  sound only with its button.
+- **Personal version.** `?for=<name>&org=<organization>` on a deck's link
+  shows "Prepared for …" on the title and closing slides. Nothing is
+  stored; the library's detail builds the link.
+- **Czech and English.** The library follows the language of your Lazurio;
+  a deck can carry both languages, each with its own page and preview.
+- **Your design system.** The library and the decks wear the design system
+  package `design-system` (`LazurioTemplates/design-system` v2.0.0, or your
+  Organization's own at a released tag): its styles, components, fonts and
+  tokens ([design](docs/design-system.md)).
+- **Skills for agents** in `.agents/skills/` and `.claude/skills/`:
+  prepare a deck from sources (`deck-from-sources`), a personal version for
+  a prospect (`deck-personal-version`), add a slide of a given type
+  (`deck-add-slide`).
+
+The only bundled deck is a sample offer of the invented company Example,
+in Czech and English, using every slide type. No customer data.
+
+## What it is not
+
+No visual slide editor, no AI API of its own, no PPTX export and no
+automatic publication. The App needs no account, API key or paid service;
+your Agent and hosting keep their own costs. No SLA is offered.
 
 ## Use it
 
 Add it to your Organization from the Marketplace in Lazurio, or follow
-[docs/adoption.md](docs/adoption.md) with your Agent. Develop it further with
-[docs/extending.md](docs/extending.md).
+[docs/adoption.md](docs/adoption.md) with your Agent. Develop it further
+with [docs/extending.md](docs/extending.md).
 
 For a local check, in `app/v1`:
 
@@ -38,11 +62,12 @@ bun run check
 
 Start an adopted module through the Lazurio lifecycle
 (`lazurio module start <Organization>/<module>`); without Lazurio's listener
-settings the app refuses to start.
+settings the App refuses to start.
 
 ## More
 
-[Architecture](ARCHITECTURE.md) · [Marketplace listing](docs/marketplace.md) ·
+[Slide types](docs/slide-types.md) · [Architecture](ARCHITECTURE.md) ·
+[Design](docs/design-system.md) · [Marketplace listing](docs/marketplace.md) ·
 [Release procedure](docs/release.md) · [Changelog](CHANGELOG.md) ·
 [Agent rules](AGENTS.md)
 

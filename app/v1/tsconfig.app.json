@@ -20,6 +20,6 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/ui-app"],
+  "include": ["src/ui-app", "src/deck/runtime.ts", "src/deck/link.ts"],
   "exclude": ["src/**/*.test.ts"]
 }

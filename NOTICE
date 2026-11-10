@@ -1,21 +1,26 @@
 Presentations
 Copyright 2026 Lazurio contributors
 
-The template's code, documentation, synthetic starter presentation and its
-preview are provided under the MIT License in LICENSE. This includes the frozen
-snapshot of the Lazurio design tokens and components (tokens.css,
-components.css, fonts.css) in app/v1/public/lazurio/ and in the starter's own
-lazurio/ folder.
+The template's code, documentation, sample deck (the invented company
+Example) with its media and previews are provided under the MIT License in
+LICENSE. The sample deck's video and poster were made for this template
+(data/v1/decks/2026-11-02-example-office-coffee/media/README.md); no stock
+footage, music or third-party image is included.
 
-Fonts keep their own license, the SIL Open Font License 1.1:
-- Inter Tight Variable (Fontsource 5.3.0), LICENSE-inter-tight.txt
-- Geist Mono (Fontsource 5.3.0), LICENSE-geist-mono.txt
-Both files sit next to the fonts in each lazurio/ folder; vendor.lock.json
-records their source and hashes.
+The design system is the package design-system
+(LazurioTemplates/design-system at a released tag), a dependency installed
+from app/v1/bun.lock under its own LICENSE and NOTICE. A built deck carries
+its stylesheet (assets/deck.css) and its fonts with their licenses
+(assets/fonts/).
+
+Fonts keep their own license, the SIL Open Font License 1.1: Inter, Inter
+Tight and Geist Mono, as the design system ships them. Each license file
+(LICENSE-inter.txt, LICENSE-inter-tight.txt, LICENSE-geist-mono.txt) sits next
+to the fonts in every built deck's assets/fonts/ folder.
 
 Dependencies installed from app/v1/bun.lock keep their own licenses and are
 not part of this repository.
 
 The MIT License does not grant any right to the name, logo or trademark
-"Lazurio". An adopted copy may keep the design snapshot under the MIT License,
-but must not present itself as an official Lazurio product.
+"Lazurio". An adopted copy must not present itself as an official Lazurio
+product.

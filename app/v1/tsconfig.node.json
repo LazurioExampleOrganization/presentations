@@ -28,6 +28,13 @@
     "src/decks.ts",
     "src/static.ts",
     "src/previews.ts",
-    "src/check-previews.ts"
+    "src/check-previews.ts",
+    "src/deck/source.ts",
+    "src/deck/messages.ts",
+    "src/deck/slides.ts",
+    "src/deck/render.ts",
+    "src/deck/theme.ts",
+    "src/deck/build.ts",
+    "src/cli/deck-build.ts"
   ]
 }
