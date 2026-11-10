@@ -3,7 +3,7 @@
 The release version (semver) is independent of the app generation
 (`app/v1`).
 
-## 0.2.0 — proposed, not released
+## 0.2.0 — 2026-11-10
 
 Presentations becomes a full presentation module: decks built from a short
 structured source, eleven slide types, local video, personal versions for a
