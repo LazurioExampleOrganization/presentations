@@ -1,8 +1,9 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
-import { listener, ModuleKitError, onShutdown } from "@lazurio/module-kit";
+import { allowedHosts, listener, ModuleKitError, onShutdown } from "@lazurio/module-kit";
 import appPackage from "../package.json";
 import { getDeckDetail, getDeckSummaries } from "./decks.ts";
+import { hostAllowed } from "./host.ts";
 import type { HealthResponse } from "./model.ts";
 import {
   DECKS_ROOT,
@@ -121,8 +122,9 @@ async function serveExport(pathname: string): Promise<Response | null> {
 async function route(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const pathname = url.pathname;
-  // Refuse foreign Host headers even on a loopback listener.
-  if (![web.host, "localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) {
+  // Refuse foreign Host headers even on a loopback listener; the module's
+  // hosted address is not foreign (see hostAllowed).
+  if (!hostAllowed(req, hosts)) {
     return Response.json({ error: "foreign_host" }, { status: 403 });
   }
 
@@ -201,10 +203,14 @@ async function fetchWithErrors(req: Request): Promise<Response> {
 }
 
 // Host and port come only from the Launchpad's listener environment
-// (Lazurio Module Standard 4.2); without them the App does not start.
+// (Lazurio Module Standard 4.2); without them the App does not start. The
+// App answers loopback and, when Lazurio hosts it, the hostname of the
+// listener's external origin; a local run has no external origin.
 let web: ReturnType<typeof listener>;
+let hosts: ReadonlySet<string>;
 try {
   web = listener("web");
+  hosts = new Set(allowedHosts("web"));
 } catch (error) {
   if (!(error instanceof ModuleKitError)) throw error;
   console.error(`Start through Lazurio lifecycle: ${error.message}`);

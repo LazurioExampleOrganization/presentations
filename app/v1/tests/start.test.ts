@@ -13,6 +13,11 @@ import { listDeckSlugs } from "../src/decks.ts";
 // listener environment; without it the App refuses to start, with it the
 // declared health path answers 200 directly (the probe does not follow
 // redirects), a foreign Host is refused and SIGTERM ends the App with exit 0.
+// A hosted run also gets the listener's external origin: Lazurio's gateway
+// passes the browser's Host through, so the module's own address must open
+// the library, its API and the decks, while a forwarded header never makes a
+// foreign Host acceptable. A local run has no external origin and answers
+// loopback only.
 const app = resolve(import.meta.dir, "..");
 const runtime = packageJson.lazurio.runtime;
 const [entrypoint] = runtime.listeners;
@@ -20,6 +25,9 @@ if (!entrypoint) throw new Error("lazurio.runtime declares no listener");
 const variable = `LAZURIO_RUNTIME_LISTENER_${entrypoint.id.toUpperCase().replaceAll("-", "_")}`;
 const baseEnv = { HOME: process.env.HOME ?? "", PATH: dirname(process.execPath) };
 const startTimeoutMs = 60_000;
+// The module's address when Lazurio hosts it (a reserved name, never resolved).
+const hostedOrigin = "https://presentations.example.test";
+const hostedHost = new URL(hostedOrigin).host;
 // A deck of the library, when it has one (an empty start has none).
 const [anyDeck] = await listDeckSlugs();
 const cleanup: string[] = [];
@@ -43,7 +51,7 @@ describe("start contract", () => {
   }
 
   test(
-    "development run: health, the client bundled by Bun, public files and decks",
+    "development run (local): health, the client bundled by Bun, public files and decks",
     async () => {
       await withServer(runtime.dev_script, {}, async (origin) => {
         const page = await fetch(`${origin}/`);
@@ -60,7 +68,7 @@ describe("start contract", () => {
   );
 
   test(
-    "built version: `build_script` writes `build_output`, `start_script` serves the installed build",
+    "built version (hosted): `build_script` writes `build_output`, `start_script` serves the installed build at the module's address",
     async () => {
       const build = Bun.spawnSync(
         [process.execPath, "--no-env-file", "run", runtime.build_script],
@@ -85,7 +93,11 @@ describe("start contract", () => {
 
       await withServer(
         runtime.start_script,
-        { NODE_ENV: "production", LAZURIO_RUNTIME_BUILD_OUTPUT: installed },
+        {
+          NODE_ENV: "production",
+          LAZURIO_RUNTIME_BUILD_OUTPUT: installed,
+          [`${variable}_EXTERNAL_ORIGIN`]: hostedOrigin,
+        },
         async (origin) => {
           const page = await fetch(`${origin}/`);
           expect(page.status).toBe(200);
@@ -108,6 +120,26 @@ describe("start contract", () => {
             expect((await fetch(`${origin}/previews/${anyDeck}.jpg`)).status).toBe(200);
             expect((await fetch(`${origin}/decks/${anyDeck}/`)).status).toBe(200);
           }
+
+          // The browser at the module's address: the library, its API and a deck.
+          const library = await fetchAs(origin, "/", hostedHost);
+          expect(library.status).toBe(200);
+          expect(await library.text()).toContain('id="root"');
+          const decks = await fetchAs(origin, "/api/decks", hostedHost);
+          expect(decks.status).toBe(200);
+          expect(Array.isArray((await decks.json()).decks)).toBe(true);
+          if (anyDeck) {
+            expect((await fetchAs(origin, `/api/decks/${anyDeck}`, hostedHost)).status).toBe(200);
+            expect((await fetchAs(origin, `/decks/${anyDeck}/`, hostedHost)).status).toBe(200);
+          }
+          // A foreign Host stays refused on every route, whatever it forwards.
+          for (const path of ["/", "/api/decks", "/api/health"]) {
+            const spoofed = await fetchAs(origin, path, "foreign.invalid", {
+              "x-forwarded-host": hostedHost,
+              forwarded: `host=${hostedHost};proto=https`,
+            });
+            expect(spoofed.status, path).toBe(403);
+          }
         },
       );
     },
@@ -117,8 +149,10 @@ describe("start contract", () => {
 
 /**
  * Starts `script` on a free loopback port, waits for health and checks what
- * every run must do (health 200 with the runtime context, foreign Host 403),
- * runs `check`, then stops the App with SIGTERM and expects exit 0.
+ * every run must do (health 200 with the runtime context on loopback, foreign
+ * Host 403 even with forwarded headers naming the module's address, the
+ * module's address 200 only when the run is hosted), runs `check`, then stops
+ * the App with SIGTERM and expects exit 0.
  */
 async function withServer(
   script: string,
@@ -139,17 +173,23 @@ async function withServer(
   });
   const origin = `http://127.0.0.1:${port}`;
   try {
-    const url = `${origin}${entrypoint.health.path}`;
-    const health = await firstResponse(url, startTimeoutMs);
+    const healthPath = entrypoint.health.path;
+    const health = await firstResponse(`${origin}${healthPath}`, startTimeoutMs);
     expect(health.status).toBe(200);
     const context = await health.json();
     expect(context.company).toBe(runtime.company);
     expect(context.module).toBe(runtime.module);
-    const foreign = await fetch(url, {
-      headers: { host: "foreign.invalid" },
-      redirect: "manual",
+    for (const host of [`127.0.0.1:${port}`, `localhost:${port}`]) {
+      expect((await fetchAs(origin, healthPath, host)).status, host).toBe(200);
+    }
+    expect((await fetchAs(origin, healthPath, "foreign.invalid")).status).toBe(403);
+    const forwarded = await fetchAs(origin, healthPath, "foreign.invalid", {
+      "x-forwarded-host": hostedHost,
+      forwarded: `host=${hostedHost};proto=https`,
     });
-    expect(foreign.status).toBe(403);
+    expect(forwarded.status).toBe(403);
+    const hosted = env[`${variable}_EXTERNAL_ORIGIN`] === hostedOrigin;
+    expect((await fetchAs(origin, healthPath, hostedHost)).status).toBe(hosted ? 200 : 403);
     await check(origin);
   } finally {
     server.kill("SIGTERM");
@@ -157,6 +197,16 @@ async function withServer(
   const exitCode = await server.exited;
   // Windows has no SIGTERM; the platform terminates the process instead.
   if (process.platform !== "win32") expect(exitCode).toBe(0);
+}
+
+/** A request to the App on loopback that names `host` in its Host header. */
+function fetchAs(
+  origin: string,
+  path: string,
+  host: string,
+  headers: Record<string, string> = {},
+): Promise<Response> {
+  return fetch(`${origin}${path}`, { headers: { ...headers, host }, redirect: "manual" });
 }
 
 async function firstResponse(url: string, timeoutMs: number): Promise<Response> {
