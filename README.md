@@ -86,7 +86,10 @@ adopted from the Lazurio Marketplace template
 at release `v0.1.0` (commit `4b023772fbe45c2209b6eb1ff44009239ed1ac99`) by
 merging it into this repository, so later releases arrive as ordinary merges
 ([docs/extending.md](docs/extending.md)); the current release is `v0.2.0`
-(commit `2629dce5a7c3108bc88c2d1f3ec4f539356ac63f`). It starts with the
-template's sample deck of the invented company Example. Its design system is
-still the template's package `github:LazurioTemplates/design-system#v2.0.0`
-until the Organization releases its own.
+(commit `2629dce5a7c3108bc88c2d1f3ec4f539356ac63f`). The library is in
+English (`language: "en"` in `app/v1/src/instance.ts`) and starts with the
+template's sample deck of the invented company Example, in its English
+variant and preview. Its design system is still the template's package
+`github:LazurioTemplates/design-system#v2.0.0`; it moves to the
+Organization's own `github:LazurioExampleOrganization/design-system#v2.0.0`
+once that tag is released.

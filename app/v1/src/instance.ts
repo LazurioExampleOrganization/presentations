@@ -11,5 +11,5 @@ export const instance: { language: "cs" | "en" } = {
    * language of the Organization's Lazurio, the `locale` of the Folder profile
    * (Settings → General), and the person confirms it.
    */
-  language: "cs",
+  language: "en",
 };

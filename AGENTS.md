@@ -105,14 +105,19 @@ and keeps all its data fictional. It was adopted from
 tag; `LICENSE` and `NOTICE` stay with the copy. On every merge of a newer
 release the Organization keeps its identity: `lazurio.module.json`
 (`company`, port lease) and `lazurio.runtime` `id`, `company` and `module` in
-`app/v1/package.json`; everything else takes the template's side, and the
-Organization has no other changes of its own.
+`app/v1/package.json`; and its setting in `app/v1/src/instance.ts`:
+`language` is `en`, so the library is in English and shows the English
+variant and preview of the sample deck. Everything else takes the
+template's side, and the Organization has no other changes of its own.
 
 The design system is the package `design-system` at
-`github:LazurioTemplates/design-system#v2.0.0`, the template's pin. The
-Organization's own design system (`LazurioExampleOrganization/design-system`)
-has no released tag yet; once an Owner releases one, this module moves its
-pin to that tag in a pull request of its own
-([docs/design-system.md](docs/design-system.md#another-design-system)), and
-from then on keeps that line on every merge. Review and merge follow the
+`github:LazurioTemplates/design-system#v2.0.0`, the template's pin, for now.
+By the Owner's decision of 2026-11-11 this module stands on the
+Organization's own design system (`LazurioExampleOrganization/design-system`),
+which wears the template's Example brand. It has no released tag yet; once an
+Owner releases `v2.0.0`, a pull request changes that one line in
+`app/v1/package.json` to `github:LazurioExampleOrganization/design-system#v2.0.0`
+(the repository is public, so CI installs it without a key;
+[docs/design-system.md](docs/design-system.md#another-design-system)), and
+from then on every merge keeps that line. Review and merge follow the
 Organization's root `AGENTS.md`.
