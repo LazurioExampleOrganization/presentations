@@ -111,13 +111,11 @@ variant and preview of the sample deck. Everything else takes the
 template's side, and the Organization has no other changes of its own.
 
 The design system is the package `design-system` at
-`github:LazurioTemplates/design-system#v2.0.0`, the template's pin, for now.
-By the Owner's decision of 2026-11-11 this module stands on the
-Organization's own design system (`LazurioExampleOrganization/design-system`),
-which wears the template's Example brand. It has no released tag yet; once an
-Owner releases `v2.0.0`, a pull request changes that one line in
-`app/v1/package.json` to `github:LazurioExampleOrganization/design-system#v2.0.0`
-(the repository is public, so CI installs it without a key;
-[docs/design-system.md](docs/design-system.md#another-design-system)), and
-from then on every merge keeps that line. Review and merge follow the
+`github:LazurioExampleOrganization/design-system#v2.0.0`: by the Owner's
+decision of 2026-11-11 this module stands on the Organization's own design
+system, which wears the template's Example brand (released on 2026-11-11).
+The repository is public, so CI installs it without a key
+([docs/design-system.md](docs/design-system.md#another-design-system)).
+Every template merge keeps that line in `app/v1/package.json`; a new release
+of the design system is a pull request that moves the pin. Review and merge follow the
 Organization's root `AGENTS.md`.

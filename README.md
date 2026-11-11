@@ -89,7 +89,6 @@ merging it into this repository, so later releases arrive as ordinary merges
 (commit `2629dce5a7c3108bc88c2d1f3ec4f539356ac63f`). The library is in
 English (`language: "en"` in `app/v1/src/instance.ts`) and starts with the
 template's sample deck of the invented company Example, in its English
-variant and preview. Its design system is still the template's package
-`github:LazurioTemplates/design-system#v2.0.0`; it moves to the
-Organization's own `github:LazurioExampleOrganization/design-system#v2.0.0`
-once that tag is released.
+variant and preview. Its design system is the Organization's own package
+`github:LazurioExampleOrganization/design-system#v2.0.0` (released on
+2026-11-11), which wears the template's Example brand.

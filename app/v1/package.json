@@ -20,7 +20,7 @@
   "dependencies": {
     "@lazurio/module-kit": "github:Lazurio/module-kit#v0.2.0",
     "@vitejs/plugin-react": "6.2.1",
-    "design-system": "github:LazurioTemplates/design-system#v2.0.0",
+    "design-system": "github:LazurioExampleOrganization/design-system#v2.0.0",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "vite": "8.3.5"
