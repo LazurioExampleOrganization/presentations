@@ -29,8 +29,9 @@ migrated and no dependency changes. Builds on 0.2.0.
   start contract against the running server: the development run local
   (loopback 200, the hosted name 403), the built version hosted (the
   library, `/api/health`, `/api/decks`, a deck's detail and the deck itself
-  200 at the module's address; a foreign `Host` 403 on every route, also
-  with forwarded headers naming the module's address).
+  200 at the module's address; a foreign `Host` 403 on the library,
+  `/api/decks` and `/api/health`, also with forwarded headers naming the
+  module's address).
 
 ### For adopted modules
 
