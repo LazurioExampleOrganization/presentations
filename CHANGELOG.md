@@ -3,6 +3,44 @@
 The release version (semver) is independent of the app generation
 (`app/v1`).
 
+## 0.2.1 — proposed, not released
+
+A fix release: a module hosted by Lazurio opens at its own address. The App
+stays generation `app/v1` and stack profile `app@2026.11`; nothing is
+migrated and no dependency changes. Builds on 0.2.0.
+
+### Fixed
+
+- **The module refused its own hosted address.** Lazurio's gateway passes
+  the browser's request on to the module with the browser's `Host`, the
+  module's address; only its separate readiness check names loopback. The
+  server of 0.1.0 to 0.2.0 accepted loopback alone, so at the module's
+  address the library, its API and the decks answered `403 foreign_host`
+  while the readiness check passed and the module looked started. The server
+  now also accepts the hostname of the listener's external origin
+  (`LAZURIO_RUNTIME_LISTENER_WEB_EXTERNAL_ORIGIN`, read by `allowedHosts()`
+  of `@lazurio/module-kit` v0.2.0), compared with the request's own `Host`
+  header in `app/v1/src/host.ts`. A local run has no external origin and
+  still answers loopback only. Forwarded headers (`X-Forwarded-Host`,
+  `Forwarded`) never widen what is accepted, and any other `Host` is still
+  refused.
+- Tests: `tests/host.test.ts` (loopback with and without a port, the hosted
+  hostname and its look-alikes, forwarded headers, a missing `Host`) and the
+  start contract against the running server: the development run local
+  (loopback 200, the hosted name 403), the built version hosted (the
+  library, `/api/health`, `/api/decks`, a deck's detail and the deck itself
+  200 at the module's address; a foreign `Host` 403 on every route, also
+  with forwarded headers naming the module's address).
+
+### For adopted modules
+
+Every module adopted from 0.1.0, 0.1.1 or 0.2.0 has this fault: hosted by
+Lazurio, it does not open at its address. Take 0.2.1 as
+[docs/extending.md](docs/extending.md#from-020-to-021) describes: merge the
+tag `v0.2.1`, run `bun run check` and open the module at its address. A
+module still on 0.1.x follows the steps of 0.2.0 with the tag `v0.2.1`
+instead; they bring the fix with them.
+
 ## 0.2.0 — 2026-11-10
 
 Presentations becomes a full presentation module: decks built from a short

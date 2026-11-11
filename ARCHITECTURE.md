@@ -47,8 +47,11 @@ comes from the address, Lazurio's shell document or `src/instance.ts`.
 
 ## Boundaries
 
-Paths and symlinks cannot leave the deck and export stores; foreign Host
-headers are refused; missing listener settings stop the start; missing
+Paths and symlinks cannot leave the deck and export stores; the server
+answers only a `Host` of loopback or, when Lazurio hosts the module, the
+hostname of the listener's external origin (`allowedHosts()` of module-kit,
+compared in `src/host.ts`; forwarded headers never count), and refuses any
+other; missing listener settings stop the start; missing
 previews stop the client build. A deck without metadata and an empty
 library stay usable.
 

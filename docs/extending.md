@@ -107,6 +107,28 @@ conflicts in your own code consciously; run `bun run deck:build` and
 `bun run check`. Read the release's CHANGELOG entry first. Open a pull
 request; declining it keeps your current version.
 
+### From 0.2.0 to 0.2.1
+
+Release 0.2.1 fixes one fault: hosted by Lazurio, the module refused its own
+address with `403 foreign_host`, so the library did not open there although
+the module looked started. Take it in every module adopted from 0.1.0,
+0.1.1 or 0.2.0:
+
+1. **Merge `v0.2.1`.** It changes `app/v1/src/server.ts`, adds
+   `app/v1/src/host.ts` and `app/v1/tests/host.test.ts`, extends
+   `app/v1/tests/start.test.ts` and sets `version` in
+   `app/v1/package.json`. No dependency, data or deck changes, so
+   `bun install` and `deck:build` have nothing to do.
+2. **Conflicts.** Only if you changed the host check in `server.ts`
+   yourself: keep `hostAllowed(req, hosts)` with `hosts` from
+   `allowedHosts("web")`, and never accept a `Host` because a forwarded
+   header names it.
+3. `bun run check`, pull request, and after the merge open the module at its
+   address in Lazurio: the library and a deck open.
+
+A module still on 0.1.x follows [From 0.1.x to 0.2.0](#from-01x-to-020)
+with the tag `v0.2.1` instead of `v0.2.0`; it brings this fix too.
+
 ### From 0.1.x to 0.2.0
 
 Release 0.2.0 adds decks built from source, the eleven slide types, video,
