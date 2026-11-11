@@ -13,7 +13,7 @@ import {
 } from "../src/paths.ts";
 
 // A valid deck slug for the lexical containment checks; no such deck needs to exist.
-const KNOWN_DECK = "2026-10-11-project-proposal";
+const KNOWN_DECK = "2026-11-02-example-office-coffee";
 
 // The fixtures below live in the decks store; an empty library still has the
 // store (data/v1/decks/.gitkeep), and a checkout without it gets it here.

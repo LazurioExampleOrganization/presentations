@@ -14,8 +14,7 @@
       "!.build",
       "!*.lock",
       "!bun.lock",
-      "!*.tsbuildinfo",
-      "!public/lazurio"
+      "!*.tsbuildinfo"
     ]
   },
   "formatter": {
