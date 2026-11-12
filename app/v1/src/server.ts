@@ -1,8 +1,10 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { extname, join } from "node:path";
-import { listener, ModuleKitError, onShutdown } from "@lazurio/module-kit";
+import { allowedHosts, listener, ModuleKitError, onShutdown } from "@lazurio/module-kit";
 import appPackage from "../package.json";
 import { getDeckDetail, getDeckSummaries } from "./decks.ts";
+import { type Relay, startDevelopmentClient } from "./dev-client.ts";
+import { hostAllowed, originAllowed } from "./host.ts";
 import type { HealthResponse } from "./model.ts";
 import {
   DECKS_ROOT,
@@ -121,10 +123,9 @@ async function serveExport(pathname: string): Promise<Response | null> {
 async function route(req: Request): Promise<Response> {
   const url = new URL(req.url);
   const pathname = url.pathname;
-  // Refuse foreign Host headers even on a loopback listener.
-  if (![web.host, "localhost", "127.0.0.1", "[::1]"].includes(url.hostname)) {
-    return Response.json({ error: "foreign_host" }, { status: 403 });
-  }
+  // Refuse foreign Host headers even on a loopback listener; the module's
+  // hosted address is not foreign (see hostAllowed).
+  if (!hostAllowed(req, hosts)) return forbidden("foreign_host");
 
   if (req.method === "GET" && pathname === "/api/health") {
     return Response.json({
@@ -175,15 +176,68 @@ async function route(req: Request): Promise<Response> {
   return Response.json({ error: "not_found" }, { status: 404 });
 }
 
-/** Development routes for the top-level entries of `public/` (Vite copies them into the build). */
-async function publicRoutes(): Promise<Record<string, typeof fetchWithErrors>> {
+function forbidden(error: "foreign_host" | "foreign_origin"): Response {
+  return Response.json({ error }, { status: 403 });
+}
+
+/**
+ * The paths a development run answers itself: the API, decks, exports and the
+ * top-level entries of `public/` (Vite copies them into the build). Every
+ * other path belongs to the client that Bun bundles.
+ */
+async function appPaths(): Promise<(pathname: string) => boolean> {
   const entries = await readdir(PUBLIC_DIR, { withFileTypes: true }).catch(() => []);
-  return Object.fromEntries(
-    entries.map((entry) => [
-      entry.isDirectory() ? `/${entry.name}/*` : `/${entry.name}`,
-      fetchWithErrors,
-    ]),
+  const files = new Set(
+    entries.filter((entry) => !entry.isDirectory()).map((entry) => `/${entry.name}`),
   );
+  const prefixes = [
+    "/api/",
+    DECKS_PREFIX,
+    EXPORTS_PREFIX,
+    ...entries.filter((entry) => entry.isDirectory()).map((entry) => `/${entry.name}/`),
+  ];
+  return (pathname) =>
+    files.has(pathname) || prefixes.some((prefix) => pathname.startsWith(prefix));
+}
+
+/**
+ * A development run: one listener that checks every request's Host (and the
+ * client's Origin) itself, answers the App's paths and forwards the rest to
+ * Bun's bundler behind it (see dev-client.ts). Bun's own check would refuse
+ * the module's hosted address.
+ */
+async function serveDevelopment(): Promise<{ url: URL; stop: () => Promise<void> }> {
+  const ownPath = await appPaths();
+  const client = startDevelopmentClient((await import("../index.html")).default, web.host);
+  const server = Bun.serve<Relay>({
+    hostname: web.host,
+    port: web.port,
+    async fetch(req, self) {
+      if (!hostAllowed(req, hosts)) return forbidden("foreign_host");
+      if (ownPath(new URL(req.url).pathname)) return fetchWithErrors(req);
+      if (!originAllowed(req, hosts)) return forbidden("foreign_origin");
+      try {
+        return await client.forward(req, self);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error(
+          "[presentation] client request failed",
+          req.method,
+          new URL(req.url).pathname,
+          message,
+        );
+        return Response.json({ error: "client_unavailable", message }, { status: 502 });
+      }
+    },
+    websocket: client.websocket,
+  });
+  return {
+    url: server.url,
+    stop: async () => {
+      await server.stop(true);
+      await client.stop();
+    },
+  };
 }
 
 function isLoopbackHost(host: string): boolean {
@@ -201,10 +255,14 @@ async function fetchWithErrors(req: Request): Promise<Response> {
 }
 
 // Host and port come only from the Launchpad's listener environment
-// (Lazurio Module Standard 4.2); without them the App does not start.
+// (Lazurio Module Standard 4.2); without them the App does not start. The
+// App answers loopback and, when Lazurio hosts it, the hostname of the
+// listener's external origin; a local run has no external origin.
 let web: ReturnType<typeof listener>;
+let hosts: ReadonlySet<string>;
 try {
   web = listener("web");
+  hosts = new Set(allowedHosts("web"));
 } catch (error) {
   if (!(error instanceof ModuleKitError)) throw error;
   console.error(`Start through Lazurio lifecycle: ${error.message}`);
@@ -217,31 +275,23 @@ if (!isLoopbackHost(web.host)) {
 
 // The built version (`start_script` from `main`, NODE_ENV=production) serves
 // the client build; a development run lets Bun bundle the client itself
-// (HTML import with hot reload) and serves `public/` beside it. One process
-// either way (Module Standard, "One process").
+// (HTML import with hot reload, behind the App's listener) and serves
+// `public/` beside it. One process either way (Module Standard, "One process").
 const production = process.env.NODE_ENV === "production";
 const clientRoot = production ? clientDirectory() : PUBLIC_DIR;
 const serveStatic = createStaticHandler(clientRoot, { spa: production });
 
-const server = production
-  ? Bun.serve({ hostname: web.host, port: web.port, fetch: fetchWithErrors })
-  : Bun.serve({
-      hostname: web.host,
-      port: web.port,
-      development: { hmr: true, console: false },
-      routes: {
-        "/api/*": fetchWithErrors,
-        "/decks/*": fetchWithErrors,
-        "/exports/*": fetchWithErrors,
-        ...(await publicRoutes()),
-        "/*": (await import("../index.html")).default,
-      },
-      fetch: fetchWithErrors,
-    });
-onShutdown(() => server.stop(true));
+let running: { url: URL; stop: () => Promise<void> };
+if (production) {
+  const server = Bun.serve({ hostname: web.host, port: web.port, fetch: fetchWithErrors });
+  running = { url: server.url, stop: () => server.stop(true) };
+} else {
+  running = await serveDevelopment();
+}
+onShutdown(() => running.stop());
 
 console.log(
-  `Presentation app/v1 (${production ? "built version" : "development"}) running at http://${server.hostname}:${server.port}`,
+  `Presentation app/v1 (${production ? "built version" : "development"}) running at ${running.url.origin}`,
 );
 console.log(`[presentation] client: ${production ? clientRoot : "bundled by Bun"}`);
 console.log(`[presentation] decks: ${DECKS_ROOT}`);

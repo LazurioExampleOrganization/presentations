@@ -3,6 +3,75 @@
 The release version (semver) is independent of the app generation
 (`app/v1`).
 
+## 0.2.1 — proposed, not released
+
+A fix release: a module hosted by Lazurio opens at its own address. The App
+stays generation `app/v1` and stack profile `app@2026.11`; nothing is
+migrated and no dependency changes. Builds on 0.2.0.
+
+### Fixed
+
+- **The module refused its own hosted address.** Lazurio's gateway passes
+  the browser's request on to the module with the browser's `Host`, the
+  module's address; only its separate readiness check names loopback. The
+  server of 0.1.0 to 0.2.0 accepted loopback alone, so at the module's
+  address the library, its API and the decks answered `403 foreign_host`
+  while the readiness check passed and the module looked started. The server
+  now also accepts the hostname of the listener's external origin
+  (`LAZURIO_RUNTIME_LISTENER_WEB_EXTERNAL_ORIGIN`, read by `allowedHosts()`
+  of `@lazurio/module-kit` v0.2.0), compared with the request's own `Host`
+  header in `app/v1/src/host.ts`. A local run has no external origin and
+  still answers loopback only. Forwarded headers (`X-Forwarded-Host`,
+  `Forwarded`) never widen what is accepted, and any other `Host` is still
+  refused.
+- **The development run refused the address too.** Bun's development
+  server, which bundles the library in a development run (HTML import with
+  hot reload), checks `Host` itself before any App code runs and answers
+  only loopback names, IP addresses and the name it listens on. At the
+  module's address the page and Bun's client (`/_bun/*`) answered
+  `403 Blocked: Host header does not match the dev server` while the API
+  answered 200; locally it also answered other IP addresses and
+  `*.localhost`. The bundler now has a port of its own on the listener's
+  loopback host, inside the same process (`app/v1/src/dev-client.ts`). The
+  App's listener checks `Host` on every path and the `Origin` of the
+  client's requests (a page elsewhere cannot open the hot-reload socket),
+  answers the API, the decks, the exports and `public/` itself, and forwards
+  the rest (the page, `/_bun/*`, the hot-reload socket) with the bundler's
+  loopback `Host` and `Origin`. Hot reload keeps working. Bun's Chrome
+  DevTools workspace route, which would now see every request come from
+  loopback, is off.
+- **A `Host` is exactly `host[:port]`.** `hostAllowed` no longer reads the
+  header as a URL, which took `attacker.invalid@localhost` and
+  `localhost/path` for `localhost`: userinfo, a path, a query, a fragment
+  and an empty or invalid port are refused.
+- Tests: `tests/host.test.ts` (the `Host` syntax, loopback with and without
+  a port, the hosted hostname and its look-alikes, values that only parse as
+  an allowed name, forwarded headers, a missing `Host`, the client's
+  `Origin`) and the start contract against the running server:
+  - the development run local: loopback 200 on the page and Bun's client;
+    the hosted name, `127.0.0.2` and `x.localhost` 403 there; the
+    hot-reload socket opens for the local page, not for the hosted one;
+  - the development run hosted: the page, Bun's client, an App route,
+    `/api/decks`, a preview and a deck 200 at the module's address; the
+    hot-reload socket opens for the module's page and refuses a page
+    elsewhere, as does Bun's error report; a foreign `Host` (also
+    `127.0.0.2` and one with userinfo) 403 on the page, Bun's client and
+    `/api/decks`, also with forwarded headers naming the module's address;
+  - the built version hosted: the library, `/api/health`, `/api/decks`, a
+    deck's detail and the deck itself 200 at the module's address; a
+    foreign `Host` 403 on the library, `/api/decks` and `/api/health`, also
+    with forwarded headers naming the module's address.
+
+### For adopted modules
+
+Every module adopted from 0.1.0, 0.1.1 or 0.2.0 has this fault: hosted by
+Lazurio, it does not open at its address, neither the built version nor a
+development run. Take 0.2.1 as
+[docs/extending.md](docs/extending.md#from-020-to-021) describes: merge the
+tag `v0.2.1`, run `bun run check` and open the module at its address. A
+module still on 0.1.x follows the steps of 0.2.0 with the tag `v0.2.1`
+instead; they bring the fix with them.
+
 ## 0.2.0 — 2026-11-10
 
 Presentations becomes a full presentation module: decks built from a short

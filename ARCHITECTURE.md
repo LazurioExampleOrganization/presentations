@@ -3,7 +3,8 @@
 One Bun process serves the React library, a same-origin read-only API, the
 decks as static files and derived PDFs. From `main` Lazurio builds the
 library with Vite and starts the server in production, serving that build;
-a development run lets Bun bundle the library itself. There is no
+a development run lets Bun bundle the library itself, behind the App's
+listener (`src/dev-client.ts`). There is no
 browser-side mutation and no content backend: decks are Git files and every
 change is a pull request.
 
@@ -47,8 +48,13 @@ comes from the address, Lazurio's shell document or `src/instance.ts`.
 
 ## Boundaries
 
-Paths and symlinks cannot leave the deck and export stores; foreign Host
-headers are refused; missing listener settings stop the start; missing
+Paths and symlinks cannot leave the deck and export stores; the server
+answers only a `Host` of loopback or, when Lazurio hosts the module, the
+hostname of the listener's external origin (`allowedHosts()` of module-kit,
+compared in `src/host.ts`; exactly `host[:port]`, forwarded headers never
+count), and refuses any other, in a development run on every path of Bun's
+client too, whose requests also need an `Origin` of those hosts; missing
+listener settings stop the start; missing
 previews stop the client build. A deck without metadata and an empty
 library stay usable.
 
