@@ -3,7 +3,7 @@
 The release version (semver) is independent of the app generation
 (`app/v1`).
 
-## 0.2.1 — proposed, not released
+## 0.2.1 — 2026-11-12
 
 A fix release: a module hosted by Lazurio opens at its own address. The App
 stays generation `app/v1` and stack profile `app@2026.11`; nothing is
