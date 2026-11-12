@@ -1,0 +1,339 @@
+/* The library's layout. Everything else comes from the design system
+   (design-system/styles.css, imported once in main.tsx): colours as
+   --ds-color-* roles, type, spacing, radii, buttons, fields, cards. No literal
+   colour, size or duration here. */
+
+body {
+  min-width: 320px;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--ds-z-sticky);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-16);
+  padding: var(--ds-space-16) var(--ds-space-32);
+  background: var(--ds-color-surface);
+  border-bottom: var(--ds-size-border) solid var(--ds-color-line);
+}
+.app-name {
+  font-family: var(--ds-type-title-font);
+  font-size: var(--ds-type-title-size);
+  font-weight: var(--ds-type-title-weight);
+  letter-spacing: var(--ds-type-title-tracking);
+}
+.app-header-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-16);
+  color: var(--ds-color-ink-muted);
+  font-size: var(--ds-type-meta-size);
+}
+.app-main {
+  width: min(calc(100% - 2 * var(--ds-space-32)), var(--ds-size-container));
+  margin: 0 auto;
+  padding-block: var(--ds-space-48) var(--ds-space-64);
+}
+.page-head {
+  display: grid;
+  gap: var(--ds-space-12);
+  margin-bottom: var(--ds-space-32);
+}
+.authoring {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-16);
+  margin-bottom: var(--ds-space-32);
+}
+.deck-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-space-24);
+}
+.deck-card.ds-card {
+  padding: 0;
+  overflow: hidden;
+  gap: 0;
+}
+.deck-preview-link {
+  display: block;
+  text-decoration: none;
+}
+.deck-preview {
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--ds-color-surface-muted);
+  border-bottom: var(--ds-size-border) solid var(--ds-color-line);
+}
+.deck-preview-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.deck-preview-error {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  padding: var(--ds-space-24);
+  color: var(--ds-color-ink-muted);
+  text-align: center;
+}
+.deck-card-body {
+  display: grid;
+  gap: var(--ds-space-12);
+  padding: var(--ds-space-20) var(--ds-space-24) var(--ds-space-24);
+}
+.deck-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-12);
+  color: var(--ds-color-ink-muted);
+  font-size: var(--ds-type-meta-size);
+}
+.deck-date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.deck-title {
+  font-family: var(--ds-type-title-font);
+  font-size: var(--ds-type-title-size);
+  font-weight: var(--ds-type-title-weight);
+  letter-spacing: var(--ds-type-title-tracking);
+  line-height: var(--ds-type-title-leading);
+}
+.deck-title-btn {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+  color: var(--ds-color-ink);
+  font: inherit;
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .deck-title-btn:hover .deck-title {
+    text-decoration: underline;
+    text-decoration-color: var(--ds-color-accent);
+    text-underline-offset: 0.2em;
+  }
+}
+.deck-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-8);
+}
+.state {
+  padding: var(--ds-space-64) var(--ds-space-24);
+  text-align: center;
+}
+.drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ds-z-dialog);
+  display: flex;
+  justify-content: flex-end;
+  background: var(--ds-shadow-overlay);
+}
+.drawer-dismiss {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+.drawer-panel {
+  position: relative;
+  width: min(var(--ds-size-dialog-md), 100%);
+  height: 100%;
+  overflow-y: auto;
+  padding: var(--ds-space-32);
+  border-left: var(--ds-size-border) solid var(--ds-color-line);
+  background: var(--ds-color-surface-raised);
+  box-shadow: var(--ds-shadow-float);
+}
+.drawer-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ds-space-16);
+  margin-bottom: var(--ds-space-24);
+}
+.drawer-title {
+  margin-bottom: var(--ds-space-8);
+}
+.drawer-close {
+  flex: none;
+}
+.drawer-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ds-space-12);
+  margin-bottom: var(--ds-space-24);
+}
+.drawer-section {
+  border-top: var(--ds-size-border) solid var(--ds-color-line);
+  padding-top: var(--ds-space-16);
+  margin-top: var(--ds-space-24);
+}
+.drawer-section h3 {
+  font-family: var(--ds-type-label-font);
+  font-size: var(--ds-type-label-size);
+  font-weight: var(--ds-type-label-weight);
+  line-height: var(--ds-type-label-leading);
+  margin-bottom: var(--ds-space-12);
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--ds-space-8) var(--ds-space-16);
+  margin: 0;
+  font-size: var(--ds-type-body-sm-size);
+}
+.detail-grid dt {
+  color: var(--ds-color-ink-muted);
+}
+.detail-grid dd {
+  margin: 0;
+}
+.source-list {
+  margin: 0;
+  padding-left: var(--ds-space-20);
+  font-size: var(--ds-type-body-sm-size);
+  color: var(--ds-color-ink-muted);
+}
+.export-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--ds-space-8);
+}
+.export-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-12);
+  padding: var(--ds-space-12) var(--ds-space-16);
+  border: var(--ds-size-border) solid var(--ds-color-line);
+  border-radius: var(--ds-radius-md);
+  font-size: var(--ds-type-body-sm-size);
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .export-link:hover {
+    background: var(--ds-color-surface-hover);
+  }
+}
+.export-bytes {
+  font-family: var(--ds-font-mono);
+  color: var(--ds-color-ink-muted);
+}
+.hint {
+  font-size: var(--ds-type-meta-size);
+  line-height: var(--ds-type-meta-leading);
+  color: var(--ds-color-ink-muted);
+}
+.app-footer {
+  padding-top: var(--ds-space-32);
+}
+.brief-panel {
+  gap: var(--ds-space-16);
+  margin-bottom: var(--ds-space-32);
+}
+.brief-panel .ds-button {
+  justify-self: start;
+}
+.personal-version {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-12);
+}
+.personal-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ds-space-12);
+}
+.personal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ds-space-8);
+}
+.section-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--ds-space-12);
+}
+.help {
+  position: relative;
+}
+.help > summary {
+  display: inline-grid;
+  place-items: center;
+  width: var(--ds-size-icon-lg);
+  height: var(--ds-size-icon-lg);
+  border: var(--ds-size-border) solid var(--ds-color-line-strong);
+  border-radius: var(--ds-radius-pill);
+  color: var(--ds-color-ink-muted);
+  font-size: var(--ds-type-meta-size);
+  line-height: 1;
+  cursor: pointer;
+  list-style: none;
+}
+.help > summary::-webkit-details-marker {
+  display: none;
+}
+.help-body {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--ds-space-8));
+  z-index: var(--ds-z-dropdown);
+  width: min(var(--ds-size-toast), 70vw);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-8);
+  padding: var(--ds-space-12) var(--ds-space-16);
+  border: var(--ds-size-border) solid var(--ds-color-line);
+  border-radius: var(--ds-radius-md);
+  background: var(--ds-color-surface-raised);
+  color: var(--ds-color-ink);
+  font-size: var(--ds-type-body-sm-size);
+  line-height: var(--ds-type-body-sm-leading);
+  box-shadow: var(--ds-shadow-float);
+}
+@media (max-width: 760px) {
+  .deck-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 560px) {
+  .app-header {
+    padding-inline: var(--ds-space-16);
+  }
+  .app-header-meta > span {
+    display: none;
+  }
+  .app-main {
+    width: calc(100% - 2 * var(--ds-space-16));
+  }
+  .drawer-panel {
+    padding: var(--ds-space-24);
+  }
+  .personal-fields {
+    grid-template-columns: 1fr;
+  }
+}

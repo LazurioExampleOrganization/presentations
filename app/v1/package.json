@@ -1,32 +1,36 @@
 {
   "name": "presentations-app-v1",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.1",
   "type": "module",
-  "packageManager": "bun@1.4.2",
+  "packageManager": "bun@1.4.4",
   "scripts": {
-    "dev": "bun --no-env-file ./node_modules/vite/bin/vite.js",
-    "build": "bun ./node_modules/vite/bin/vite.js build",
-    "typecheck": "tsc --noEmit",
+    "dev": "bun --no-env-file run src/server.ts",
+    "start": "bun --no-env-file run src/server.ts",
+    "build": "bun --no-env-file run src/check-previews.ts && bun --no-env-file ./node_modules/vite/bin/vite.js build",
+    "deck:build": "bun --no-env-file run src/cli/deck-build.ts",
+    "deck:check": "bun --no-env-file run src/cli/deck-build.ts --check",
+    "typecheck": "tsc -b",
     "lint": "biome check .",
     "format": "biome check --write .",
-    "check": "bun run typecheck && bun run lint",
+    "check": "bun run typecheck && bun run lint && bun test tests",
     "check:prepared": "bun run src/prepared.ts",
-    "test": "bun test"
+    "test": "bun test tests"
   },
   "dependencies": {
     "@lazurio/module-kit": "github:Lazurio/module-kit#v0.2.0",
-    "@vitejs/plugin-react": "6.0.5",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "vite": "8.2.0"
+    "@vitejs/plugin-react": "6.2.1",
+    "design-system": "github:LazurioExampleOrganization/design-system#v2.0.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vite": "8.3.5"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.4.15",
-    "@types/bun": "1.4.2",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "typescript": "5.9.3"
+    "@biomejs/biome": "2.6.4",
+    "@types/bun": "1.4.4",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "typescript": "7.0.2"
   },
   "lazurio": {
     "runtime": {
@@ -37,22 +41,25 @@
       "module": "presentations",
       "surface": "internal",
       "dev_script": "dev",
+      "start_script": "start",
       "build_script": "build",
+      "build_output": "dist",
       "tags": [
         "presentations"
       ],
       "listeners": [
         {
-          "id": "app",
+          "id": "web",
           "role": "entrypoint",
           "lease": "main",
           "protocol": "http",
           "health": {
             "kind": "http",
-            "path": "/"
+            "path": "/api/health"
           }
         }
-      ]
+      ],
+      "description": "Knihovna prezentací a tvorba s Agentem."
     },
     "preparation": {
       "schema_version": "lazurio.preparation.v1",

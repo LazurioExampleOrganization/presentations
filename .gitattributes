@@ -1,0 +1,10 @@
+# Keep every text file LF on every platform, so a Windows checkout with
+# core.autocrlf=true does not change the built decks (deck:check compares them
+# byte for byte with a fresh build).
+* text=auto eol=lf
+*.jpg binary
+*.mp4 binary
+*.webm binary
+*.webp binary
+*.woff binary
+*.woff2 binary

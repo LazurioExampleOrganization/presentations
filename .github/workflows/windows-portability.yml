@@ -1,0 +1,38 @@
+name: windows portability
+
+# The same gate on Windows, where people run Presentations on their own
+# computers: paths, the deck build and the design system package must hold
+# there too. Only code and decks can break that, so this runs for pull
+# requests that change the App, the decks or a workflow, and on demand; never
+# after a merge to main (Module Standard, CI).
+on:
+  pull_request:
+    paths:
+      - "app/**"
+      - "data/**"
+      - ".gitattributes"
+      - ".github/workflows/**"
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: bun run check (windows-latest)
+    runs-on: windows-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app/v1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+      - run: bun install --frozen-lockfile
+      - run: bun run check
