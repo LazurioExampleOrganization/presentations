@@ -115,16 +115,19 @@ the module looked started. Take it in every module adopted from 0.1.0,
 0.1.1 or 0.2.0:
 
 1. **Merge `v0.2.1`.** It changes `app/v1/src/server.ts`, adds
-   `app/v1/src/host.ts` and `app/v1/tests/host.test.ts`, extends
-   `app/v1/tests/start.test.ts` and sets `version` in
-   `app/v1/package.json`. No dependency, data or deck changes, so
-   `bun install` and `deck:build` have nothing to do.
-2. **Conflicts.** Only if you changed the host check in `server.ts`
-   yourself: keep `hostAllowed(req, hosts)` with `hosts` from
-   `allowedHosts("web")`, and never accept a `Host` because a forwarded
-   header names it.
+   `app/v1/src/host.ts`, `app/v1/src/dev-client.ts` and
+   `app/v1/tests/host.test.ts`, extends `app/v1/tests/start.test.ts` and
+   sets `version` in `app/v1/package.json`. No dependency, data or deck
+   changes, so `bun install` and `deck:build` have nothing to do.
+2. **Conflicts.** Only if you changed the host check or the development
+   routes in `server.ts` yourself: keep `hostAllowed(req, hosts)` with
+   `hosts` from `allowedHosts("web")`, and never accept a `Host` because a
+   forwarded header names it. A path your module answers itself in a
+   development run belongs in `appPaths()`; every other path goes to Bun's
+   bundler behind the listener.
 3. `bun run check`, pull request, and after the merge open the module at its
-   address in Lazurio: the library and a deck open.
+   address in Lazurio: the library and a deck open, in a development run
+   too.
 
 A module still on 0.1.x follows [From 0.1.x to 0.2.0](#from-01x-to-020)
 with the tag `v0.2.1` instead of `v0.2.0`; it brings this fix too.

@@ -30,7 +30,10 @@ Keep both skill folders identical; a test checks it.
 - From `main` Lazurio runs the built version: `build` writes the client to
   `dist`, and `start` runs the same server with `NODE_ENV=production`,
   serving the installed build from `LAZURIO_RUNTIME_BUILD_OUTPUT`. A
-  development run (`dev`) lets Bun bundle the client itself. The preparation
+  development run (`dev`) lets Bun bundle the client itself, on a loopback
+  port of its own behind the App's listener, which checks `Host` (and the
+  client's `Origin`) first and never lets Bun see the module's address
+  (`src/dev-client.ts`). The preparation
   only checks that dependencies are installed; it never builds.
 - A deck: `data/v1/decks/<YYYY-MM-DD>-<slug>/deck.source.json` and its
   `media/`. `bun run deck:build` writes `index.html`,
