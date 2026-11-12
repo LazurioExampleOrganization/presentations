@@ -15,9 +15,10 @@ import { listDeckSlugs } from "../src/decks.ts";
 // redirects), a foreign Host is refused and SIGTERM ends the App with exit 0.
 // A hosted run also gets the listener's external origin: Lazurio's gateway
 // passes the browser's Host through, so the module's own address must open
-// the library, its API and the decks, while a forwarded header never makes a
-// foreign Host acceptable. A local run has no external origin and answers
-// loopback only.
+// the library, its API and the decks in both runs (in a development run also
+// Bun's client and its hot-reload socket), while a forwarded header never
+// makes a foreign Host acceptable. A local run has no external origin and
+// answers loopback only.
 const app = resolve(import.meta.dir, "..");
 const runtime = packageJson.lazurio.runtime;
 const [entrypoint] = runtime.listeners;
@@ -62,7 +63,69 @@ describe("start contract", () => {
           expect((await fetch(`${origin}/previews/${anyDeck}.jpg`)).status).toBe(200);
           expect((await fetch(`${origin}/decks/${anyDeck}/`)).status).toBe(200);
         }
+
+        // Loopback only, on the page and Bun's client too (Bun's own
+        // development server would also answer any IP address and *.localhost).
+        const script = await clientScript(origin, new URL(origin).host);
+        expect((await fetch(`${origin}${script}`)).status).toBe(200);
+        for (const host of [hostedHost, "127.0.0.2", "x.localhost"]) {
+          for (const path of ["/", script]) {
+            expect((await fetchAs(origin, path, host)).status, `${host} ${path}`).toBe(403);
+          }
+        }
+        expect(await hotReloadAnswers(origin, origin)).toBe(true);
+        expect(await hotReloadAnswers(origin, hostedOrigin)).toBe(false);
       });
+    },
+    startTimeoutMs + 30_000,
+  );
+
+  test(
+    "development run (hosted): the library, Bun's client, the API and hot reload at the module's address",
+    async () => {
+      await withServer(
+        runtime.dev_script,
+        { [`${variable}_EXTERNAL_ORIGIN`]: hostedOrigin },
+        async (origin) => {
+          // The browser at the module's address: the page, Bun's client
+          // script, an App route, the API, public files and a deck.
+          const script = await clientScript(origin, hostedHost);
+          expect((await fetchAs(origin, script, hostedHost)).status).toBe(200);
+          const route = await fetchAs(origin, "/some/app/route", hostedHost);
+          expect(route.status).toBe(200);
+          expect(await route.text()).toContain('id="root"');
+          const decks = await fetchAs(origin, "/api/decks", hostedHost);
+          expect(decks.status).toBe(200);
+          expect(Array.isArray((await decks.json()).decks)).toBe(true);
+          if (anyDeck) {
+            expect((await fetchAs(origin, `/previews/${anyDeck}.jpg`, hostedHost)).status).toBe(
+              200,
+            );
+            expect((await fetchAs(origin, `/decks/${anyDeck}/`, hostedHost)).status).toBe(200);
+          }
+          // The hot-reload socket opens for the module's page, not for a page
+          // elsewhere; Bun's error report refuses a page elsewhere too.
+          expect(await hotReloadAnswers(origin, hostedOrigin)).toBe(true);
+          expect(await hotReloadAnswers(origin, "https://attacker.invalid")).toBe(false);
+          const report = await fetch(`${origin}/_bun/report_error`, {
+            method: "POST",
+            headers: { host: hostedHost, origin: "https://attacker.invalid" },
+            body: "x",
+          });
+          expect(report.status).toBe(403);
+          // A foreign Host stays refused on the page, Bun's client and the
+          // API, whatever it forwards.
+          for (const host of ["foreign.invalid", "127.0.0.2", `attacker.invalid@${hostedHost}`]) {
+            for (const path of ["/", script, "/api/decks"]) {
+              const refused = await fetchAs(origin, path, host, {
+                "x-forwarded-host": hostedHost,
+                forwarded: `host=${hostedHost};proto=https`,
+              });
+              expect(refused.status, `${host} ${path}`).toBe(403);
+            }
+          }
+        },
+      );
     },
     startTimeoutMs + 30_000,
   );
@@ -197,6 +260,39 @@ async function withServer(
   const exitCode = await server.exited;
   // Windows has no SIGTERM; the platform terminates the process instead.
   if (process.platform !== "win32") expect(exitCode).toBe(0);
+}
+
+/** The script of Bun's client that the development page names. */
+async function clientScript(origin: string, host: string): Promise<string> {
+  const page = await fetchAs(origin, "/", host);
+  expect(page.status).toBe(200);
+  const html = await page.text();
+  expect(html).toContain('id="root"');
+  const script = html.match(/\/_bun\/client\/[^"]+\.js/)?.[0];
+  if (!script) throw new Error("the development page names no script of Bun's client");
+  return script;
+}
+
+/**
+ * Opens Bun's hot-reload socket through the App's listener as a page of
+ * `pageOrigin` would; true when its first message arrives, false when the
+ * handshake is refused.
+ */
+function hotReloadAnswers(origin: string, pageOrigin: string): Promise<boolean> {
+  return new Promise((settle) => {
+    const socket = new WebSocket(`${origin.replace(/^http/, "ws")}/_bun/hmr`, {
+      headers: { origin: pageOrigin },
+    });
+    const finish = (answered: boolean) => {
+      clearTimeout(timer);
+      socket.close();
+      settle(answered);
+    };
+    const timer = setTimeout(() => finish(false), 10_000);
+    socket.addEventListener("message", () => finish(true));
+    socket.addEventListener("error", () => finish(false));
+    socket.addEventListener("close", () => finish(false));
+  });
 }
 
 /** A request to the App on loopback that names `host` in its Host header. */
