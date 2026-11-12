@@ -30,7 +30,10 @@ Keep both skill folders identical; a test checks it.
 - From `main` Lazurio runs the built version: `build` writes the client to
   `dist`, and `start` runs the same server with `NODE_ENV=production`,
   serving the installed build from `LAZURIO_RUNTIME_BUILD_OUTPUT`. A
-  development run (`dev`) lets Bun bundle the client itself. The preparation
+  development run (`dev`) lets Bun bundle the client itself, on a loopback
+  port of its own behind the App's listener, which checks `Host` (and the
+  client's `Origin`) first and never lets Bun see the module's address
+  (`src/dev-client.ts`). The preparation
   only checks that dependencies are installed; it never builds.
 - A deck: `data/v1/decks/<YYYY-MM-DD>-<slug>/deck.source.json` and its
   `media/`. `bun run deck:build` writes `index.html`,
@@ -100,8 +103,8 @@ the stack only through a profile release or a generation change, see
 This module belongs to Lazurio Example Organization, which works in English
 and keeps all its data fictional. It was adopted from
 `LazurioTemplates/presentations` at `v0.1.0`
-(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.2.0`
-(`2629dce5a7c3108bc88c2d1f3ec4f539356ac63f`), taken by merging each release
+(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.2.1`
+(`764b3d693479d05623c0cb65593532c3223e5779`), taken by merging each release
 tag; `LICENSE` and `NOTICE` stay with the copy. On every merge of a newer
 release the Organization keeps its identity: `lazurio.module.json`
 (`company`, port lease) and `lazurio.runtime` `id`, `company` and `module` in

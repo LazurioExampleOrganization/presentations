@@ -1,6 +1,6 @@
 # Presentations — marketplace listing
 
-**Status:** releases 0.1.0, 0.1.1 and 0.2.0 published.
+**Status:** releases 0.1.0, 0.1.1, 0.2.0 and 0.2.1 published.
 **Author:** Lazurio. **License:** MIT, see [LICENSE](../LICENSE)
 and [NOTICE](../NOTICE). **Price:** free. **Source:** this repository,
 `LazurioTemplates/presentations`. **Support:** Issues in this repository.

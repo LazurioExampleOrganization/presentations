@@ -85,8 +85,8 @@ adopted from the Lazurio Marketplace template
 [`LazurioTemplates/presentations`](https://github.com/LazurioTemplates/presentations)
 at release `v0.1.0` (commit `4b023772fbe45c2209b6eb1ff44009239ed1ac99`) by
 merging it into this repository, so later releases arrive as ordinary merges
-([docs/extending.md](docs/extending.md)); the current release is `v0.2.0`
-(commit `2629dce5a7c3108bc88c2d1f3ec4f539356ac63f`). The library is in
+([docs/extending.md](docs/extending.md)); the current release is `v0.2.1`
+(commit `764b3d693479d05623c0cb65593532c3223e5779`). The library is in
 English (`language: "en"` in `app/v1/src/instance.ts`) and starts with the
 template's sample deck of the invented company Example, in its English
 variant and preview. Its design system is the Organization's own package
