@@ -5,6 +5,8 @@ The release version (semver) is independent of the app generation
 
 ## Unreleased
 
+## 0.3.0 — 2026-11-18
+
 Ready as an Application of an Organization (Lazurio decision 0249, Module
 Standard `MS-19`), on the stack profile `app@2026.12`.
 

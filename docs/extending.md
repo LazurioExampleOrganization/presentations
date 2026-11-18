@@ -108,6 +108,23 @@ conflicts in your own code consciously; run `bun run deck:build` and
 `bun run check`. Read the release's CHANGELOG entry first. Open a pull
 request; declining it keeps your current version.
 
+### From 0.2.1 to 0.3.0
+
+Release 0.3.0 makes the App ready as an Application of an Organization on the
+stack profile `app@2026.12`. Decks, slides and the look do not change:
+
+1. **Merge `v0.3.0`.** It takes `@lazurio/module-kit` v0.4.0 in
+   `app/v1/package.json` and `bun.lock`, checks the application role on every
+   request for content (`app/v1/src/server.ts`, `app/v1/src/content-path.ts`)
+   and adds tests. Run `bun install --frozen-lockfile`; decks need no
+   rebuild.
+2. **Conflicts.** Only if you changed the routes of `server.ts` yourself: a
+   path that serves decks, exports, previews or the API stays behind the role
+   check, decided on the path as it is read (`isContentPath`).
+3. `bun run check`, pull request, and after the merge open the module at its
+   address in Lazurio: the library and a deck open for a person with a role
+   in the Application.
+
 ### From 0.2.0 to 0.2.1
 
 Release 0.2.1 fixes one fault: hosted by Lazurio, the module refused its own
