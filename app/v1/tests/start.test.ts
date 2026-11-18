@@ -3,6 +3,7 @@ import { cpSync, existsSync, mkdtempSync, realpathSync, rmSync, writeFileSync } 
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
+import { GATEWAY_HEADERS } from "@lazurio/module-kit";
 import packageJson from "../package.json";
 import { listDeckSlugs } from "../src/decks.ts";
 
@@ -94,6 +95,8 @@ describe("start contract", () => {
           const route = await fetchAs(origin, "/some/app/route", hostedHost);
           expect(route.status).toBe(200);
           expect(await route.text()).toContain('id="root"');
+          // Without an application role the hosted App gives no content.
+          expect((await fetchAs(origin, "/api/decks", hostedHost, {}, false)).status).toBe(403);
           const decks = await fetchAs(origin, "/api/decks", hostedHost);
           expect(decks.status).toBe(200);
           expect(Array.isArray((await decks.json()).decks)).toBe(true);
@@ -103,6 +106,7 @@ describe("start contract", () => {
             );
             expect((await fetchAs(origin, `/decks/${anyDeck}/`, hostedHost)).status).toBe(200);
           }
+          if (anyDeck) await previewsNeedARole(origin, anyDeck);
           // The hot-reload socket opens for the module's page, not for a page
           // elsewhere; Bun's error report refuses a page elsewhere too.
           expect(await hotReloadAnswers(origin, hostedOrigin)).toBe(true);
@@ -188,6 +192,8 @@ describe("start contract", () => {
           const library = await fetchAs(origin, "/", hostedHost);
           expect(library.status).toBe(200);
           expect(await library.text()).toContain('id="root"');
+          // Without an application role the hosted App gives no content.
+          expect((await fetchAs(origin, "/api/decks", hostedHost, {}, false)).status).toBe(403);
           const decks = await fetchAs(origin, "/api/decks", hostedHost);
           expect(decks.status).toBe(200);
           expect(Array.isArray((await decks.json()).decks)).toBe(true);
@@ -195,6 +201,7 @@ describe("start contract", () => {
             expect((await fetchAs(origin, `/api/decks/${anyDeck}`, hostedHost)).status).toBe(200);
             expect((await fetchAs(origin, `/decks/${anyDeck}/`, hostedHost)).status).toBe(200);
           }
+          if (anyDeck) await previewsNeedARole(origin, anyDeck);
           // A foreign Host stays refused on every route, whatever it forwards.
           for (const path of ["/", "/api/decks", "/api/health"]) {
             const spoofed = await fetchAs(origin, path, "foreign.invalid", {
@@ -295,14 +302,52 @@ function hotReloadAnswers(origin: string, pageOrigin: string): Promise<boolean> 
   });
 }
 
-/** A request to the App on loopback that names `host` in its Host header. */
+/**
+ * A deck's first-slide preview is the Organization's content: at the hosted
+ * address it needs an application role, in every spelling of its path.
+ */
+async function previewsNeedARole(origin: string, deck: string): Promise<void> {
+  const spellings = [
+    `/previews/${deck}.jpg`,
+    `/%70reviews/${deck}.jpg`,
+    `/previews%2F${deck}.jpg`,
+    `//previews/${deck}.jpg`,
+  ];
+  for (const path of spellings) {
+    const refused = await fetchAs(origin, path, hostedHost, {}, false);
+    expect(refused.status, path).toBe(403);
+  }
+  const shown = await fetchAs(origin, `/previews/${deck}.jpg`, hostedHost);
+  expect(shown.status).toBe(200);
+  expect(shown.headers.get("content-type")).toContain("image/jpeg");
+}
+
+/** What Lazurio's gateway states for an Application User of the hosted App. */
+const GATEWAY_USER: Record<string, string> = {
+  [GATEWAY_HEADERS.subject]: "2659b76d-0000-4000-8000-000000000001",
+  [GATEWAY_HEADERS.username]: "alexmorgan",
+  [GATEWAY_HEADERS.entry]: "app",
+  [GATEWAY_HEADERS.appRole]: "user",
+};
+
+/**
+ * A request to the App on loopback that names `host` in its Host header. At
+ * the hosted address it comes as through the gateway, from an Application
+ * User, unless `asGateway` is false (then nobody is stated and the content is
+ * refused).
+ */
 function fetchAs(
   origin: string,
   path: string,
   host: string,
   headers: Record<string, string> = {},
+  asGateway = true,
 ): Promise<Response> {
-  return fetch(`${origin}${path}`, { headers: { ...headers, host }, redirect: "manual" });
+  const stated = asGateway && host === hostedHost ? GATEWAY_USER : {};
+  return fetch(`${origin}${path}`, {
+    headers: { ...stated, ...headers, host },
+    redirect: "manual",
+  });
 }
 
 async function firstResponse(url: string, timeoutMs: number): Promise<Response> {
