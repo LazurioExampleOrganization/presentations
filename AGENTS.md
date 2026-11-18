@@ -103,8 +103,8 @@ the stack only through a profile release or a generation change, see
 This module belongs to Lazurio Example Organization, which works in English
 and keeps all its data fictional. It was adopted from
 `LazurioTemplates/presentations` at `v0.1.0`
-(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.2.1`
-(`764b3d693479d05623c0cb65593532c3223e5779`), taken by merging each release
+(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.3.0`
+(`c6a0d1f6efbeec3b31eb93359e11ba304ce21fe3`), taken by merging each release
 tag; `LICENSE` and `NOTICE` stay with the copy. On every merge of a newer
 release the Organization keeps its identity: `lazurio.module.json`
 (`company`, port lease) and `lazurio.runtime` `id`, `company` and `module` in
