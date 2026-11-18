@@ -62,8 +62,8 @@ Keep both skill folders identical; a test checks it.
 
 ## Stack
 
-Stack profile `app@2026.11` of Lazurio: Bun 1.4.4, TypeScript 7.0.2, Biome
-2.6.4, Vite 8.3.5, React 19.3.1, `bun test`, `@lazurio/module-kit` v0.2.0.
+Stack profile `app@2026.12` of Lazurio: Bun 1.4.4, TypeScript 7.0.2, Biome
+2.6.4, Vite 8.3.5, React 19.3.1, `bun test`, `@lazurio/module-kit` v0.4.0.
 Every dependency has an exact version and `bun.lock` is committed. Change
 the stack only through a profile release or a generation change, see
 [docs/extending.md](docs/extending.md).

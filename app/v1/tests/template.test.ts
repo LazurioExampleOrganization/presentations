@@ -45,7 +45,7 @@ describe("template contract", () => {
     ]) {
       expect(existsSync(join(root, path)), path).toBe(true);
     }
-    expect(read("docs/extending.md")).toContain("app@2026.11");
+    expect(read("docs/extending.md")).toContain("app@2026.12");
     expect(read("CHANGELOG.md")).toMatch(
       new RegExp(`^## ${packageJson.version.replaceAll(".", "\\.")} `, "m"),
     );
