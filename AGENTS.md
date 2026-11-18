@@ -62,8 +62,8 @@ Keep both skill folders identical; a test checks it.
 
 ## Stack
 
-Stack profile `app@2026.11` of Lazurio: Bun 1.4.4, TypeScript 7.0.2, Biome
-2.6.4, Vite 8.3.5, React 19.3.1, `bun test`, `@lazurio/module-kit` v0.2.0.
+Stack profile `app@2026.12` of Lazurio: Bun 1.4.4, TypeScript 7.0.2, Biome
+2.6.4, Vite 8.3.5, React 19.3.1, `bun test`, `@lazurio/module-kit` v0.4.0.
 Every dependency has an exact version and `bun.lock` is committed. Change
 the stack only through a profile release or a generation change, see
 [docs/extending.md](docs/extending.md).
@@ -103,8 +103,8 @@ the stack only through a profile release or a generation change, see
 This module belongs to Lazurio Example Organization, which works in English
 and keeps all its data fictional. It was adopted from
 `LazurioTemplates/presentations` at `v0.1.0`
-(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.2.1`
-(`764b3d693479d05623c0cb65593532c3223e5779`), taken by merging each release
+(`4b023772fbe45c2209b6eb1ff44009239ed1ac99`) and is at `v0.3.0`
+(`c6a0d1f6efbeec3b31eb93359e11ba304ce21fe3`), taken by merging each release
 tag; `LICENSE` and `NOTICE` stay with the copy. On every merge of a newer
 release the Organization keeps its identity: `lazurio.module.json`
 (`company`, port lease) and `lazurio.runtime` `id`, `company` and `module` in
