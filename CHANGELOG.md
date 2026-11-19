@@ -5,6 +5,8 @@ The release version (semver) is independent of the app generation
 
 ## Unreleased
 
+## 0.3.1 — 2026-11-19
+
 ### For people
 
 - A deck's date is written in the interface's language ("2. 11. 2026",
