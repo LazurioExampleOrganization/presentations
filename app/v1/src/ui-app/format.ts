@@ -5,6 +5,29 @@ export function slideLabel(count: number, language: UiLanguage = "cs"): string {
   return `${count} ${plural(count, MESSAGES[language].slides, language)}`;
 }
 
+/**
+ * A deck's day ("2026-11-02") in the interface's language: "2. 11. 2026",
+ * "2 Nov 2026". Anything that is not a calendar day stays as written.
+ */
+export function formatDay(value: string, language: UiLanguage = "cs"): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  if (!match) return value;
+  const [, year, month, day] = match.map(Number);
+  const date = new Date(Date.UTC(year, month - 1, day));
+  // Date.UTC reads the years 0–99 as 1900–1999 and rolls an impossible day
+  // over; either way the date shown would differ from the one written.
+  if (
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
+  )
+    return value;
+  return new Intl.DateTimeFormat(language === "cs" ? "cs-CZ" : "en-GB", {
+    dateStyle: "medium",
+    timeZone: "UTC",
+  }).format(date);
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes <= 0) return "—";
   if (bytes < 1024) return `${bytes} B`;

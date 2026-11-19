@@ -1,7 +1,7 @@
 import { Button } from "design-system/react";
 import { useState } from "react";
 import type { DeckSummary } from "../../model.ts";
-import { slideLabel } from "../format.ts";
+import { formatDay, slideLabel } from "../format.ts";
 import { useMessages } from "../i18n.ts";
 import { OpenLink } from "./OpenLink.tsx";
 
@@ -47,7 +47,11 @@ export function DeckCard({
             {slideLabel(deck.slideCount, language)}
             {deck.exportCount > 0 ? ` · ${deck.exportCount} PDF` : ""}
           </span>
-          {deck.date ? <time className="deck-date">{deck.date}</time> : null}
+          {deck.date ? (
+            <time className="deck-date" dateTime={deck.date}>
+              {formatDay(deck.date, language)}
+            </time>
+          ) : null}
         </div>
 
         <button type="button" className="deck-title-btn" onClick={() => onOpenDetail(deck.slug)}>

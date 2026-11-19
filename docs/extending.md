@@ -108,6 +108,28 @@ conflicts in your own code consciously; run `bun run deck:build` and
 `bun run check`. Read the release's CHANGELOG entry first. Open a pull
 request; declining it keeps your current version.
 
+### From 0.3.0 to 0.3.1
+
+Release 0.3.1 changes two things people see. A deck's date is written in the
+interface's language ("2. 11. 2026"), and on a phone the deck's detail no
+longer drags the library behind it:
+
+1. **Merge `v0.3.1`.** It changes `app/v1/src/ui-app/format.ts`,
+   `app/v1/src/ui-app/components/DeckCard.tsx`, `DeckDrawer.tsx` and
+   `app/v1/src/ui-app/index.css`, adds `app/v1/tests/format.test.ts` and sets
+   `version` in `app/v1/package.json`. No dependency, data or deck changes,
+   so `bun install` and `deck:build` have nothing to do.
+2. **Conflicts.** Only in a file of step 1 that you changed yourself. In
+   `package.json` keep your own dependencies and take the template's
+   `version`. In `format.ts`, the card and the detail, a deck's date goes
+   through `formatDay(value, language)`. In `index.css`, `.drawer-panel`
+   keeps `overscroll-behavior: contain`.
+3. `bun run check`, pull request, and after the merge open a deck's detail
+   in Lazurio and check its dates.
+
+A module on 0.2.x follows [From 0.2.1 to 0.3.0](#from-021-to-030) with the
+tag `v0.3.1` instead of `v0.3.0`; it brings these changes too.
+
 ### From 0.2.1 to 0.3.0
 
 Release 0.3.0 makes the App ready as an Application of an Organization on the

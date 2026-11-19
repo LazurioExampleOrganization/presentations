@@ -1,7 +1,7 @@
 import { Alert, Button, TextField } from "design-system/react";
 import { type ReactNode, useEffect, useId, useState } from "react";
 import type { DeckDetail } from "../../model.ts";
-import { formatBytes, metadataLabel, personalLink, slideLabel } from "../format.ts";
+import { formatBytes, formatDay, metadataLabel, personalLink, slideLabel } from "../format.ts";
 import { useMessages } from "../i18n.ts";
 import { OpenLink } from "./OpenLink.tsx";
 
@@ -199,8 +199,18 @@ export function DeckDrawer({
                 />
                 <Row label={m.slideCount} value={slideLabel(detail.slideCount, language)} />
                 <Row label={m.owner} value={detail.owner} />
-                <Row label={m.created} value={detail.createdAt} />
-                <Row label={m.updated} value={detail.updatedAt} />
+                <Row
+                  label={m.created}
+                  value={
+                    detail.createdAt ? formatDay(detail.createdAt, language) : detail.createdAt
+                  }
+                />
+                <Row
+                  label={m.updated}
+                  value={
+                    detail.updatedAt ? formatDay(detail.updatedAt, language) : detail.updatedAt
+                  }
+                />
                 <Row label={m.portfolio} value={detail.portfolioModel} />
                 <Row
                   label={m.audience}
