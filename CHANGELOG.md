@@ -5,6 +5,13 @@ The release version (semver) is independent of the app generation
 
 ## Unreleased
 
+### For people
+
+- A deck's date is written in the interface's language ("2. 11. 2026",
+  "2 Nov 2026") on its card and in its detail, instead of "2026-11-02".
+- On a phone, scrolling to the end of a deck's detail no longer drags the
+  library behind it.
+
 ## 0.3.0 — 2026-11-18
 
 Ready as an Application of an Organization (Lazurio decision 0249, Module
